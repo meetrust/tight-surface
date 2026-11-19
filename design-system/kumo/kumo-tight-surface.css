@@ -1,0 +1,282 @@
+/* ==========================================================================
+   kumo-tight-surface.css · Kumo × Tight Surface 适配层 v0.2
+   适用：@cloudflare/kumo 2.18.1（锁定精确版本；Tailwind v4 路径，不用 standalone CSS）
+         Tight Surface 设计原则 v2 · tokens.css（含 warn、pop）原样引入、不加 layer
+   原理：Kumo 组件只读语义 token（--color-kumo-* / --text-color-kumo-*）。
+         这里把它们全部指向 Tight Surface token，再用一个排在 utilities
+         之后的层（ts-kumo）补齐焦点、悬停、选中这些 token 管不到的状态。
+   入口 app.css 的顺序见 Design System「Tight Surface」的“Kumo 适配”；最关键的是第一行的层顺序声明：
+     @layer ts-important, theme, base, ts-base, components, utilities, ts-kumo;
+   ========================================================================== */
+
+/* 1 · dark: 变体跟随 data-mode（Kumo 的 Switch 仍有少量 dark: 写法） */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
+/* 2 · 构建期主题：字体、圆角、投影、动效
+   Kumo 的类名在你的 Tailwind 构建里编译，所以这里改的值会直接写进 Kumo 组件。 */
+@theme {
+  --font-sans: var(--font-body);           /* font-mono 由 tokens.css 的同名变量覆盖 */
+  --radius-xl: 16px;                       /* = r-lg：Dialog / Toast / Empty / DatePicker */
+  --shadow-2xs: 0 0 #0000;                 /* 平静：描边分层，不用投影 */
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+  --shadow-2xl: 0 0 #0000;
+  --text-xl: 18px;                         /* Tailwind 的 xl / 2xl / 3xl 对齐到 fs-lg / fs-xl / fs-2xl */
+  --text-xl--line-height: 1.4;
+  --text-2xl: 22px;
+  --text-2xl--line-height: 1.3;
+  --text-3xl: clamp(26px, 3.4vw, 36px);
+  --text-3xl--line-height: 1.25;
+  --default-transition-duration: .28s;     /* = dur */
+  --default-transition-timing-function: cubic-bezier(.2, .7, .2, 1);  /* = ease */
+}
+
+/* 3 · 语义 token 映射（Night 默认；Day 只改 TS token，这里无需重复）
+   选择器带上 [data-theme] / [data-mode]：子树切主题时在那一层重新求值。 */
+@layer ts-kumo {
+  :root, [data-theme], [data-mode] {
+    /* 底色 */
+    --color-kumo-canvas: var(--void);
+    --color-kumo-base: var(--panel);
+    --color-kumo-elevated: var(--panel-2);
+    --color-kumo-recessed: var(--void);
+    --color-kumo-overlay: var(--pop);
+    --color-kumo-control: var(--pop);
+    --color-kumo-tint: color-mix(in srgb, var(--ink) 6%, transparent);
+    --color-kumo-contrast: var(--ink);
+    --color-kumo-interact: var(--rule-2);
+    --color-kumo-fill: var(--rule);
+    --color-kumo-fill-hover: var(--rule-2);
+
+    /* 描边：控件 rule-2，分隔 rule；焦点由第 4 节的 outline 负责 */
+    --color-kumo-line: var(--rule-2);
+    --color-kumo-hairline: var(--rule);
+    --color-kumo-focus: var(--rule-2);
+
+    /* 唯一强调色 */
+    --color-kumo-brand: var(--amber);
+    --color-kumo-brand-hover: var(--amber-ink);
+
+    /* 投影全部透明 */
+    --color-kumo-shadow-edge: transparent;
+    --color-kumo-shadow-drop: transparent;
+    --color-kumo-arrow-edge: transparent;
+    --color-kumo-arrow-stroke: var(--rule-2);
+
+    /* 状态：info 用中性色（ice 只表示“可以点”） */
+    --color-kumo-info: var(--ink-2);
+    --color-kumo-info-tint: color-mix(in srgb, var(--ink) 6%, transparent);
+    --color-kumo-success: var(--good);
+    --color-kumo-success-tint: color-mix(in srgb, var(--good) 12%, transparent);
+    --color-kumo-warning: var(--warn);
+    --color-kumo-warning-tint: color-mix(in srgb, var(--warn) 12%, transparent);
+    --color-kumo-danger: var(--bad);
+    --color-kumo-danger-tint: color-mix(in srgb, var(--bad) 12%, transparent);
+    --color-kumo-banner-info: color-mix(in srgb, var(--ink) 6%, transparent);
+    --color-kumo-banner-warning: color-mix(in srgb, var(--warn) 12%, transparent);
+
+    /* Badge 具名色 → 数据色（只用于分类；状态请用 success / warning / error） */
+    --color-kumo-badge-neutral: var(--l0);
+    --color-kumo-badge-blue: var(--l1);
+    --color-kumo-badge-purple: var(--l2);
+    --color-kumo-badge-orange: var(--l4);
+    --color-kumo-badge-red: var(--l5);
+    --color-kumo-badge-green: var(--l6);
+    --color-kumo-badge-teal: var(--l6);
+    --color-kumo-badge-inverted: var(--ink);
+
+    /* 文字四级 */
+    --text-color-kumo-default: var(--ink);
+    --text-color-kumo-strong: var(--ink);
+    --text-color-kumo-subtle: var(--dim);
+    --text-color-kumo-inactive: var(--faint);
+    --text-color-kumo-placeholder: var(--faint);
+    --text-color-kumo-inverse: var(--on-amber);
+    --text-color-kumo-brand: var(--amber);
+    --text-color-kumo-link: var(--ice);
+    --text-color-kumo-info: var(--ink-2);
+    --text-color-kumo-success: var(--good);
+    --text-color-kumo-danger: var(--bad);
+    --text-color-kumo-warning: var(--warn);
+    --text-color-kumo-badge-orange-subtle: var(--l4);
+    --text-color-kumo-badge-teal-subtle: var(--l6);
+    --text-color-kumo-badge-neutral-subtle: var(--ink-2);
+    --text-color-kumo-badge-inverted: var(--void);
+  }
+
+  /* 4 · 焦点：2px amber 外偏移 3px；Kumo 的 2px 焦点 ring 降为 rule-2 描边，避免双重高亮 */
+  :focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+    --tw-ring-color: var(--rule-2);
+  }
+  /* 浮层容器只是承接焦点，高亮由其中的条目（data-highlighted）表达 */
+  :is([role="menu"], [role="listbox"], [role="dialog"], [role="alertdialog"]):focus-visible { outline-color: transparent; }
+
+  /* 5 · 动效：一条缓动、一个时长 */
+  [class~="duration-100"], [class~="duration-150"], [class~="duration-200"], [class~="duration-300"] {
+    transition-duration: var(--dur);
+  }
+  [class~="ease-out"], [class~="ease-in-out"] { transition-timing-function: var(--ease); }
+  :is([data-kumo-component="Button"], [data-kumo-component="LinkButton"]) {
+    transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease),
+                color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+
+  /* 6 · 中文字重：只用 Noto Sans SC 已加载的 400 / 500 / 700 / 900（600 会被当成 700 显示）
+     正文、选项文字、Tabs、Badge 400；字段标签、Banner 标题、操作按钮保持 Kumo 的 500；
+     资源按钮 600 与 TS .btn 一致；选中的筛选按钮 700 与 TS .fbtn 一致 */
+  :is([data-kumo-part="tab"], [data-kumo-component="Badge"]) { font-weight: 400; }
+  :has(> [data-kumo-component="Switch"]) > label { font-weight: 400; }
+
+  /* 按钮变体（data-ts-variant 由 adapters.tsx 设置，也可以手写）
+     primary = TS .btn.video 的琥珀淡底；danger 同构；filter = TS .fbtn；resource = TS .btn 48px */
+  [data-ts-variant="primary"] { --tw-ring-color: color-mix(in srgb, var(--amber) 55%, transparent); }
+  [data-ts-variant="danger"] { --tw-ring-color: color-mix(in srgb, var(--bad) 55%, transparent); }
+  [data-ts-variant="filter"] {
+    border-radius: var(--r-pill);
+    padding-inline: var(--sp-3);
+    background-color: transparent;
+    color: var(--dim);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+  }
+  [data-ts-variant="filter"][aria-pressed="true"] {
+    background-color: var(--amber);
+    --tw-ring-color: var(--amber);
+    color: var(--on-amber);
+    font-weight: 700;
+  }
+  [data-ts-variant="resource"] {
+    background-color: rgba(255, 255, 255, .03);   /* 与 TS .btn 相同的取值 */
+    height: auto;
+    min-height: var(--h-btn);
+    border-radius: var(--r-md);
+    padding-inline: var(--sp-4);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  :where([data-theme="day"]) [data-ts-variant="resource"] { background-color: color-mix(in srgb, var(--ink) 3%, transparent); }
+
+  /* 禁用 / 暂缺 = 虚线描边 + faint 文字，保持占位（TS .btn.off）；文字色在第 10 节 */
+  :is([data-kumo-component="Button"], [data-kumo-component="LinkButton"]):is(:disabled, [aria-disabled="true"]) {
+    opacity: 1;
+    background-color: transparent;
+    border: 1px dashed var(--rule);
+    --tw-ring-shadow: 0 0 #0000;
+    font-weight: 500;
+    transform: none;
+  }
+  /* 未经适配的 variant="primary" / "destructive" 兜底：同样回到琥珀 / bad 淡底 */
+  [data-kumo-component="Button"]:not([data-ts-variant])[style*="kumo-brand"] { --tw-ring-color: color-mix(in srgb, var(--amber) 55%, transparent); }
+  [data-kumo-component="Button"]:not([data-ts-variant])[style*="kumo-danger"] { --tw-ring-color: color-mix(in srgb, var(--bad) 55%, transparent); }
+
+  /* 7 · 选中 = 琥珀实底 + on-amber（Checkbox / Radio / Switch） */
+  [data-kumo-component="Checkbox"]:is([data-checked], [data-indeterminate]) {
+    background-color: var(--amber);
+    --tw-ring-color: var(--amber);
+  }
+  [data-kumo-component="Checkbox"] > span { color: var(--on-amber); }
+  [data-kumo-part="item"][data-kumo-component="Radio"][data-checked] {
+    background-color: var(--amber);
+    --tw-ring-color: var(--amber);
+  }
+  [data-kumo-part="item"][data-kumo-component="Radio"][data-checked] span span { background-color: var(--on-amber); }
+  [data-kumo-component="Switch"] {
+    background-color: var(--rule);
+    --tw-ring-color: var(--rule-2);
+  }
+  [data-kumo-component="Switch"] > * { background-color: var(--dim); }
+  [data-kumo-component="Switch"][aria-checked="true"] {
+    background-color: var(--amber);
+    --tw-ring-color: var(--amber);
+  }
+  [data-kumo-component="Switch"][aria-checked="true"] > * { background-color: var(--on-amber); }
+
+  /* DatePicker 选中日 = 琥珀实底 + on-amber；Sidebar 当前项 = SideToc 的琥珀淡底 + 3px 琥珀竖条 */
+  .rdp-root td[data-selected="true"]:not([data-range-middle]) .rdp-day_button {
+    background-color: var(--amber);
+    color: var(--on-amber);
+  }
+  [data-kumo-part="menu-button"][data-active="true"] {
+    --sidebar-active-bg: color-mix(in srgb, var(--amber) 9%, transparent);
+    background-color: var(--sidebar-active-bg);
+    box-shadow: inset 3px 0 0 var(--amber);
+  }
+
+  /* Toast：标题与说明回到字号阶梯（Kumo 写的是 15.6 / 14.8px），与 Banner 一致 */
+  [role="region"][aria-live] [role="dialog"] h2 { font-size: var(--fs-sm); line-height: 1.4; }
+  [role="region"][aria-live] [role="dialog"] p { font-size: var(--fs-xs); line-height: 1.5; }
+
+  /* 8 · Kumo Table 放进 TS 的 .tbl 容器：表头、单元格回到 DataTable 规格，去掉斑马纹 */
+  .tbl :where(table) { border-collapse: collapse; }
+  .tbl :where(tbody tr) { background-color: transparent; --kumo-table-row-bg: var(--panel); }
+  .tbl :where(thead th, tbody td) { line-height: 1.8; }
+  .tbl :where(thead th) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-2xs);
+    letter-spacing: .08em;
+    color: var(--amber);
+    background-color: var(--panel-2);
+    padding: var(--sp-3) var(--sp-4);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tbl :where(tbody td) {
+    padding: var(--sp-3) var(--sp-4);
+    font-size: var(--fs-sm);
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tbl :where(tbody tr:last-child td) { border-bottom: 0; }
+
+  /* 9 · 悬停：只在精确指针下；按钮上浮 2px、描边转 ice（筛选按钮不上浮） */
+  @media (hover: hover) and (pointer: fine) {
+    :is([data-kumo-component="Button"], [data-kumo-component="LinkButton"]):not(:disabled, [aria-disabled="true"], [data-ts-variant="filter"]):hover {
+      transform: var(--lift);
+      --tw-ring-color: var(--ice);
+    }
+    :is([data-kumo-component="Button"], [data-kumo-component="LinkButton"]):not(:disabled, [aria-disabled="true"], [data-ts-variant]):hover {
+      background-color: color-mix(in srgb, var(--ice) 8%, transparent);
+    }
+    [data-ts-variant="resource"]:not([aria-disabled="true"]):hover { background-color: color-mix(in srgb, var(--ice) 8%, transparent); }
+    [data-ts-variant="primary"]:not(:disabled):hover { --tw-ring-color: var(--amber); }
+    [data-ts-variant="danger"]:not(:disabled):hover { --tw-ring-color: var(--bad); }
+    [data-ts-variant="filter"]:not([aria-pressed="true"], :disabled):hover {
+      color: var(--ink);
+      --tw-ring-color: var(--amber);
+      background-color: transparent;
+    }
+    .tbl :where(tbody tr:hover) { background-color: color-mix(in srgb, var(--ice) 5%, transparent); }
+  }
+}
+
+/* 10 · 只有更早的层里的 !important 才能压过 Kumo 的 !text-white / !text-kumo-default */
+@layer ts-important {
+  /* Dialog 用内联 style 写入 --tw-shadow（rgb(0 0 0 / .03)），只有 !important 能归零 */
+  :where([role="dialog"], [role="alertdialog"]) { --tw-shadow: 0 0 #0000 !important; }
+  :is([data-kumo-component="Button"], [data-kumo-component="LinkButton"]):is(:disabled, [aria-disabled="true"]) {
+    color: var(--faint) !important;
+  }
+  [data-ts-variant="primary"],
+  [data-kumo-component="Button"]:not([data-ts-variant])[style*="kumo-brand"] {
+    color: var(--amber-ink) !important;
+    --kumo-button-emphasis-bg: color-mix(in srgb, var(--amber) 11%, transparent) !important;
+    --kumo-button-emphasis-ring: color-mix(in srgb, var(--amber) 55%, transparent) !important;
+    --kumo-button-emphasis-gradient-start: transparent !important;
+    --kumo-button-emphasis-gradient-end: transparent !important;
+  }
+  [data-ts-variant="danger"],
+  [data-kumo-component="Button"]:not([data-ts-variant])[style*="kumo-danger"] {
+    color: var(--bad) !important;
+    --kumo-button-emphasis-bg: color-mix(in srgb, var(--bad) 11%, transparent) !important;
+    --kumo-button-emphasis-ring: color-mix(in srgb, var(--bad) 55%, transparent) !important;
+    --kumo-button-emphasis-gradient-start: transparent !important;
+    --kumo-button-emphasis-gradient-end: transparent !important;
+  }
+}

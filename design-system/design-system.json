@@ -1,0 +1,25 @@
+{
+ "v": 3,
+ "layout": "files",
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-03T23:24:21Z"
+ },
+ "title": "Tight Surface",
+ "namespace": "TightSurface",
+ "libraries": [],
+ "sections": {},
+ "groups": [],
+ "assetGroups": {},
+ "blobs": {},
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "lastChange": {
+  "by": "韩同学",
+  "at": "2026-11-16T02:05:00Z",
+  "via": "Claude chat",
+  "note": "生产审查：.btn 标签不换行、TaskRow 窄屏重排、强调按钮悬停对比度、pulse 随主题取色；Badge 必须写 variant；warn 淡底与圆角说明更正；22 个预览在 Night / Day、960 / 390 / 320 下全部通过验收"
+ }
+}

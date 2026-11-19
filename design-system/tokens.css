@@ -1,0 +1,164 @@
+/* Tight Surface — generated from tokens.json */
+:root, [data-theme="night"] {
+  --void: #0a0d14;
+  --panel: #111723;
+  --panel-2: #172031;
+  --ink: #e8edf5;
+  --ink-2: #c3ccdb;
+  --dim: #a3aec0;
+  --faint: #7d8aa3;
+  --muted: #56637b;
+  --rule: #243049;
+  --rule-2: #33425f;
+  --amber: #ffb347;
+  --on-amber: var(--void);
+  --amber-ink: #ffd59a;
+  --ice: #7cc8ff;
+  --l0: #8b97ab;
+  --l1: #7cc8ff;
+  --l2: #a99bff;
+  --l3: #ffd166;
+  --l4: #ff9f5a;
+  --l5: #ff6b6b;
+  --l6: #4fd6a0;
+  --l7: #ff7ad9;
+  --good: var(--l6);
+  --bad: var(--l5);
+  --warn: var(--l4);
+  --pop: var(--panel-2);
+  --heat-1: #12304a;
+  --heat-1-ink: #9fd4ff;
+  --heat-2: #123a30;
+  --heat-2-ink: #86ebc0;
+  --heat-3: #3d3414;
+  --heat-3-ink: #ffe08a;
+  --heat-4: #4a2c16;
+  --heat-4-ink: #ffbe8a;
+  --heat-5: #4f1c24;
+  --heat-5-ink: #ffa3aa;
+  --code-bg: #070a10;
+  --code-bar: #0d121c;
+  --code-ink: #cdd7e6;
+  --code-comment: #7a88a3;
+  --inline-code-ink: #cfe9ff;
+  --chart-label-bg: #0b1019;
+  --chart-text: #c9d3e3;
+  --nav-glass: rgba(10, 13, 20, 0.86);
+  --selection: rgba(255, 179, 71, 0.35);
+  --shadow-drawer: 30px 0 60px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 12px rgba(255, 179, 71, 0.45);
+}
+[data-theme="day"] {
+  --void: #f4f6f9;
+  --panel: #ffffff;
+  --panel-2: #eef1f6;
+  --ink: #121826;
+  --ink-2: #2f3a4d;
+  --dim: #4a5568;
+  --faint: #5b6679;
+  --muted: #637086;
+  --rule: #dfe4ec;
+  --rule-2: #c3cbd8;
+  --amber: #995300;
+  --on-amber: var(--panel);
+  --amber-ink: #7a4100;
+  --ice: #0a5fae;
+  --l0: #56637a;
+  --l1: #0a5fae;
+  --l2: #6248cc;
+  --l3: #7a5a00;
+  --l4: #a8430c;
+  --l5: #b62a36;
+  --l6: #096b4a;
+  --l7: #a82d83;
+  --good: var(--l6);
+  --bad: var(--l5);
+  --warn: var(--l4);
+  --pop: var(--panel);
+  --heat-1: #e2eefa;
+  --heat-1-ink: #0b4475;
+  --heat-2: #dff3e9;
+  --heat-2-ink: #0a5639;
+  --heat-3: #fbf0cc;
+  --heat-3-ink: #5e4600;
+  --heat-4: #fde5d2;
+  --heat-4-ink: #7f3608;
+  --heat-5: #fbdfe1;
+  --heat-5-ink: #8e1b2a;
+  --code-bg: #f2f5f9;
+  --code-bar: #e8ecf2;
+  --code-ink: #1d2738;
+  --code-comment: #596579;
+  --inline-code-ink: #0b4f8c;
+  --chart-label-bg: #ffffff;
+  --chart-text: #2a3446;
+  --nav-glass: rgba(244, 246, 249, 0.86);
+  --selection: rgba(255, 179, 71, 0.35);
+  --shadow-drawer: 30px 0 60px rgba(18, 24, 38, 0.16);
+  --shadow-glow: 0 0 12px rgba(153, 83, 0, 0.35);
+}
+:root {
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+  --fs-2xs: 12px;
+  --fs-xs: 13px;
+  --fs-sm: 14px;
+  --fs-base: 15px;
+  --fs-body: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --fs-2xl: clamp(26px, 3.4vw, 36px);
+  --fs-hero: clamp(42px, 6.4vw, 72px);
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --dur: .28s;
+  --lift: translateY(-2px);
+  --h-tag: 20px;
+  --h-pill: 26px;
+  --h-copy: 28px;
+  --h-filter: 36px;
+  --h-nav-link: 40px;
+  --h-totop: 44px;
+  --h-btn: 48px;
+  --icon-xs: 12px;
+  --icon-sm: 13px;
+  --icon-md: 15px;
+  --icon-menu: 16px;
+  --icon-lg: 18px;
+  --icon-edge: 22px;
+  --toc-w: 272px;
+  --nav-h: 60px;
+  --wrap: 1160px;
+  --bp-mobile: 760px;
+  --font-display: "Chakra Petch", "Noto Sans SC", "PingFang SC", sans-serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Sarasa Mono SC", ui-monospace, Menlo, Consolas, monospace;
+}
+.t-hero { font-family: var(--font-body); font-size: 72px; line-height: 1.08; font-weight: 900; letter-spacing: 0.01em; }
+.t-section { font-family: var(--font-body); font-size: 36px; line-height: 1.25; font-weight: 900; }
+.t-section-no { font-family: var(--font-display); font-size: 88px; line-height: 0.8; font-weight: 700; }
+.t-module-no { font-family: var(--font-display); font-size: 46px; line-height: 1; font-weight: 700; }
+.t-stat { font-family: var(--font-display); font-size: 26px; line-height: 1.15; font-weight: 700; }
+.t-lead { font-family: var(--font-body); font-size: 18px; line-height: 1.75; font-weight: 400; }
+.t-body { font-family: var(--font-body); font-size: 16px; line-height: 1.8; font-weight: 400; }
+.t-base { font-family: var(--font-body); font-size: 15px; line-height: 1.75; font-weight: 400; }
+.t-sm { font-family: var(--font-body); font-size: 14px; line-height: 1.7; font-weight: 400; }
+.t-xs { font-family: var(--font-body); font-size: 13px; line-height: 1.6; font-weight: 400; }
+.t-2xs { font-family: var(--font-body); font-size: 12px; line-height: 1.5; font-weight: 400; }
+.t-eyebrow { font-family: var(--font-display); font-size: 12px; line-height: 1.4; font-weight: 600; letter-spacing: 0.18em; }
+.t-fig-label { font-family: var(--font-display); font-size: 13px; line-height: 1.4; font-weight: 600; letter-spacing: 0.1em; }
+.t-table-head { font-family: var(--font-display); font-size: 12px; line-height: 1.4; font-weight: 600; letter-spacing: 0.08em; }
+.t-nav-no { font-family: var(--font-display); font-size: 11px; line-height: 1.2; font-weight: 600; }
+.t-code-title { font-family: var(--font-mono); font-size: 26px; line-height: 1.25; font-weight: 600; }
+.t-code { font-family: var(--font-mono); font-size: 13px; line-height: 1.6; font-weight: 400; }
+.t-mono-chip { font-family: var(--font-mono); font-size: 12px; line-height: 1.2; font-weight: 400; }

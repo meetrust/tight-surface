@@ -1,0 +1,23 @@
+<!-- @dsCard group="Agent" height=320 subtitle="思考轨迹：进行中展开 · 完成后收起" -->
+<div style="padding:24px;display:grid;gap:12px;max-width:680px">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-to" viewBox="0 0 24 16"><path d="M2 8h17.5M15.5 3.8 19.7 8l-4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+  <details class="trace" data-state="running" open>
+    <summary><span class="trace-dot" aria-hidden="true"></span><span class="trace-title">思考中</span><span class="trace-time">12.4 s</span><span class="trace-meta">4 步 · 1 次检索</span><svg class="i trace-caret" aria-hidden="true"><use href="#i-to"/></svg></summary>
+    <ol class="trace-steps">
+      <li><span class="tk" style="--c: var(--l0)">步骤</span><p>拆解问题：先汇总本月各模型的 Token 用量，再找出增长最快的路由。</p><span class="t">0.8 s</span></li>
+      <li><span class="tk" style="--c: var(--l1)">检索</span><p>读取 <code>usage_2026-11.csv</code>，共 1,284 行。</p><span class="t">2.1 s</span></li>
+      <li><span class="tk" style="--c: var(--l2)">推理</span><p>claude-opus-5-5 的用量环比增长 18%，主要来自长上下文请求。</p><span class="t">6.3 s</span></li>
+      <li><span class="tk" style="--c: var(--l6)">编码</span><p>运行汇总脚本，按模型和日期生成透视表。</p><span class="t">3.2 s</span></li>
+    </ol>
+  </details>
+  <details class="trace">
+    <summary><span class="trace-dot" aria-hidden="true"></span><span class="trace-title">已思考</span><span class="trace-time">8.6 s</span><span class="trace-meta">3 步 · 无检索</span><svg class="i trace-caret" aria-hidden="true"><use href="#i-to"/></svg></summary>
+    <ol class="trace-steps">
+      <li><span class="tk" style="--c: var(--l0)">步骤</span><p>确认需要比较的两种路由策略。</p><span class="t">2.0 s</span></li>
+      <li><span class="tk" style="--c: var(--l2)">推理</span><p>按上月请求结构估算两种策略的成本差。</p><span class="t">4.1 s</span></li>
+      <li><span class="tk" style="--c: var(--l2)">推理</span><p>给出推荐，并列出对回答质量的影响。</p><span class="t">2.5 s</span></li>
+    </ol>
+  </details>
+</div>

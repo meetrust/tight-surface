@@ -1,0 +1,11 @@
+<!-- @dsCard group="Content" height=260 -->
+<div style="padding:24px;display:grid;gap:16px">
+  <div class="term" style="--c: var(--l1)">
+    <div class="term-bar"><span class="lbl">python · backward()</span><button class="copy" type="button">复制</button></div>
+    <pre tabindex="0" role="region" aria-label="代码 python · backward()（可横向滚动）"><span class="k">def</span> <span class="f">backward</span>(self):
+    topo = build_topo(self)      <span class="c"># 先拓扑排序</span>
+    self.grad = <span class="hl">1.0</span>
+    <span class="k">for</span> v <span class="k">in</span> reversed(topo): v._backward()</pre>
+  </div>
+  <p style="margin:0">行内代码：调用 <code>loss.backward()</code> 前先把梯度清零。</p>
+</div>

@@ -1,0 +1,30 @@
+<!-- @dsCard group="Agent" height=360 subtitle="任务行：完成 · 进行中 · 失败 · 排队" -->
+<div style="padding:24px;max-width:680px">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.2 8.4 6.6 11.6 12.8 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cross" viewBox="0 0 16 16"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </svg>
+  <ol class="tasks">
+    <li class="task" data-state="done">
+      <span class="task-no">01</span>
+      <div class="task-main"><p class="task-title">核对模型调用日志</p><p class="task-note">12 个模型 · 1,284 条记录</p></div>
+      <div class="task-side"><span class="st ok"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>已完成</span></div>
+    </li>
+    <li class="task" data-state="running">
+      <span class="task-no">02</span>
+      <div class="task-main"><p class="task-title">估算下月 Token 预算</p><p class="task-note">按 8 周趋势外推</p>
+        <div class="task-bar" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" aria-label="估算下月 Token 预算 68%"><span style="--v: 68"></span></div></div>
+      <div class="task-side"><span class="st v">进行中 68%</span></div>
+    </li>
+    <li class="task" data-state="failed">
+      <span class="task-no">03</span>
+      <div class="task-main"><p class="task-title">同步账单到表格</p><p class="task-note">表格接口超时，已重试 2 次</p></div>
+      <div class="task-side"><span class="st bad"><svg class="i" aria-hidden="true"><use href="#i-cross"/></svg>失败</span><button class="act sm" type="button">重试</button></div>
+    </li>
+    <li class="task" data-state="queued">
+      <span class="task-no">04</span>
+      <div class="task-main"><p class="task-title">起草周报</p><p class="task-note">等待前两项完成</p></div>
+      <div class="task-side"><span class="st no">排队</span></div>
+    </li>
+  </ol>
+</div>

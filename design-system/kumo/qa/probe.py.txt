@@ -1,0 +1,193 @@
+"""Kumo × Tight Surface QA probe.  python3 qa/probe.py  → prints a report, writes screenshots to qa/shots/."""
+import json, os, sys
+from playwright.sync_api import sync_playwright
+
+BASE = os.environ.get("BASE", "http://localhost:4173/")
+OUT = os.path.join(os.path.dirname(__file__), "shots")
+os.makedirs(OUT, exist_ok=True)
+AXE = open("node_modules/axe-core/axe.min.js").read()
+
+TOKENS = {
+  "night": dict(void="#0a0d14", panel="#111723", panel2="#172031", ink="#e8edf5", ink2="#c3ccdb", dim="#a3aec0",
+                faint="#7d8aa3", rule="#243049", rule2="#33425f", amber="#ffb347", amberink="#ffd59a", ice="#7cc8ff",
+                l0="#8b97ab", l1="#7cc8ff", l2="#a99bff", l3="#ffd166", l4="#ff9f5a", l5="#ff6b6b", l6="#4fd6a0", l7="#ff7ad9",
+                white="#ffffff", codebg="#070a10", inlinecode="#cfe9ff", muted="#56637b"),
+  "day": dict(void="#f4f6f9", panel="#ffffff", panel2="#eef1f6", ink="#121826", ink2="#2f3a4d", dim="#4a5568",
+              faint="#5b6679", rule="#dfe4ec", rule2="#c3cbd8", amber="#995300", amberink="#7a4100", ice="#0a5fae",
+              l0="#56637a", l1="#0a5fae", l2="#6248cc", l3="#7a5a00", l4="#a8430c", l5="#b62a36", l6="#096b4a", l7="#a82d83",
+              codebg="#f2f5f9", inlinecode="#0b4f8c", muted="#637086"),
+}
+
+JS = r"""
+(args) => {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 1; const cx = cv.getContext('2d', { willReadFrequently: true });
+  const viaCanvas = (s) => { const m = s.match(/\/\s*([0-9.]+%?)\s*\)$/); let a = 1; if (m) { a = m[1].endsWith('%') ? parseFloat(m[1]) / 100 : parseFloat(m[1]); s = s.replace(/\s*\/\s*[0-9.]+%?\s*\)$/, ')'); }
+    cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillStyle = s; cx.fillRect(0, 0, 1, 1); const d = cx.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2], a]; };
+  const parse = (s) => {
+    if (!s || s === 'none') return null;
+    if (/^(oklab|oklch|lab|lch)\(/.test(s)) return viaCanvas(s);
+    let m = s.match(/rgba?\(([^)]+)\)/);
+    if (m) { const p = m[1].split(/[ ,/]+/).filter(Boolean).map(Number); return [p[0], p[1], p[2], p.length > 3 ? p[3] : 1]; }
+    m = s.match(/color\(srgb ([^)]+)\)/);
+    if (m) { const p = m[1].split(/[ /]+/).filter(Boolean).map(Number); return [p[0]*255, p[1]*255, p[2]*255, p.length > 3 ? p[3] : 1]; }
+    return null;
+  };
+  const hex = (h) => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+  const pal = Object.entries(args.tokens).map(([k, v]) => [k, hex(v)]);
+  const near = (c) => {
+    for (const [k, t] of pal) if (Math.abs(c[0]-t[0]) < 2.6 && Math.abs(c[1]-t[1]) < 2.6 && Math.abs(c[2]-t[2]) < 2.6) return k;
+    return null;
+  };
+  const sel = (el) => {
+    const p = el.closest('[data-probe]'); const tag = el.tagName.toLowerCase();
+    return (p ? `[${p.dataset.probe}] ` : '') + tag + (el.getAttribute('data-kumo-component') ? `[${el.getAttribute('data-kumo-component')}]` : '') + (el.className && typeof el.className === 'string' ? '.' + el.className.split(' ').slice(0, 3).join('.') : '');
+  };
+  const roots = [...document.querySelectorAll(args.scope)];
+  const bad = [];
+  const seen = new Set();
+  for (const r of roots) for (const el of [r, ...r.querySelectorAll('*')]) {
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+    const props = { color: cs.color, bg: cs.backgroundColor, bt: cs.borderTopWidth !== '0px' && cs.borderTopStyle !== 'none' ? cs.borderTopColor : null,
+                    outline: cs.outlineStyle !== 'none' && cs.outlineWidth !== '0px' ? cs.outlineColor : null };
+    const sh = cs.boxShadow;
+    if (sh && sh !== 'none') for (const m of sh.matchAll(/(rgba?\([^)]+\)|color\([^)]+\)|oklch\([^)]+\))/g)) props['shadow' + m.index] = m[1];
+    if (el.tagName === 'svg' || el.closest('svg')) { props.fill = cs.fill; props.stroke = cs.stroke; }
+    for (const [k, v] of Object.entries(props)) {
+      if (!v) continue;
+      if (k === 'color' && !el.childNodes.length) continue;
+      if (k === 'color' && ![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) && el.tagName !== 'svg') continue;
+      const c = parse(v); if (!c) continue;
+      if (c[0] === 'ok?') { bad.push([sel(el), k, v]); continue; }
+      if (c[3] === 0) continue;
+      const n = near(c);
+      if (!n) { const key = sel(el) + k + v; if (!seen.has(key)) { seen.add(key); bad.push([sel(el), k, v]); } }
+    }
+  }
+  return bad;
+}
+"""
+
+METRICS = r"""
+() => {
+  const q = (p) => document.querySelector(`[data-probe="${p}"]`);
+  const pick = (el) => { if (!el) return null; const cs = getComputedStyle(el); const r = el.getBoundingClientRect();
+    return { h: Math.round(r.height*10)/10, radius: cs.borderTopLeftRadius, color: cs.color, bg: cs.backgroundColor, shadow: cs.boxShadow,
+      border: cs.borderTopWidth + ' ' + cs.borderTopColor, font: cs.fontFamily.split(',')[0], fs: cs.fontSize, fw: cs.fontWeight, ls: cs.letterSpacing, transform: cs.transform }; };
+  const out = {};
+  for (const p of ['ts-btn','ts-btn-video','ts-fbtn-on','ts-fbtn-off','ts-lvl','k-primary','k-secondary','k-danger','k-sm','k-filter-on','k-filter-off','k-raw-primary'])
+    out[p] = pick(q(p));
+  out['k-resource'] = pick(document.querySelector('[data-ts-variant="resource"]'));
+  out['k-chip'] = pick(document.querySelector('[data-probe="k-chip"] [data-kumo-component="Badge"]'));
+  out['k-input'] = pick(document.querySelector('input'));
+  out['ts-th'] = pick(document.querySelector('[data-probe="ts-tbl"] thead th'));
+  out['k-th'] = pick(document.querySelector('[data-probe="k-tbl"] thead th'));
+  out['ts-td'] = pick(document.querySelector('[data-probe="ts-tbl"] tbody td'));
+  out['k-td'] = pick(document.querySelector('[data-probe="k-tbl"] tbody td'));
+  const cbs = [...document.querySelectorAll('[data-kumo-component="Checkbox"]')]; out['k-check-on'] = pick(cbs[0]); out['k-check-off'] = pick(cbs[1]);
+  const sws = [...document.querySelectorAll('[data-kumo-component="Switch"]')]; out['k-switch-on'] = pick(sws[0]); out['k-switch-off'] = pick(sws[1]);
+  out['k-switch-thumb-on'] = pick(sws[0] && sws[0].querySelector('span'));
+  const tabs = document.querySelectorAll('[role="tab"]'); out['k-tab-active'] = pick([...tabs].find(t => t.getAttribute('aria-selected') === 'true'));
+  out['k-badge-success'] = pick(document.querySelector('[data-kumo-component="Badge"]'));
+  out.body = pick(document.body);
+  out.scroll = [document.documentElement.scrollWidth, innerWidth];
+  return out;
+}
+"""
+
+def contrast_js():
+    return r"""
+() => {
+  const parse = (s) => { const m = s.match(/rgba?\(([^)]+)\)/) || s.match(/color\(srgb ([^)]+)\)/); if (!m) return null;
+    const p = m[1].split(/[ ,/]+/).filter(Boolean).map(Number); const isSrgb = s.startsWith('color');
+    return [isSrgb ? p[0]*255 : p[0], isSrgb ? p[1]*255 : p[1], isSrgb ? p[2]*255 : p[2], p.length > 3 ? p[3] : 1]; };
+  const lum = ([r,g,b]) => { const f = (v) => { v /= 255; return v <= .03928 ? v/12.92 : ((v+.055)/1.055)**2.4; }; return .2126*f(r)+.7152*f(g)+.0722*f(b); };
+  const blend = (top, bot) => { const a = top[3]; return [top[0]*a+bot[0]*(1-a), top[1]*a+bot[1]*(1-a), top[2]*a+bot[2]*(1-a), 1]; };
+  const bgOf = (el) => { const stack = []; let e = el; while (e) { const c = parse(getComputedStyle(e).backgroundColor); if (c && c[3] > 0) stack.push(c); if (c && c[3] >= 1) break; e = e.parentElement; }
+    let col = parse(getComputedStyle(document.documentElement).backgroundColor) || [10,13,20,1]; if (col[3] < 1) col = [10,13,20,1];
+    for (let i = stack.length - 1; i >= 0; i--) col = blend(stack[i], col); return col; };
+  const res = [];
+  for (const el of document.querySelectorAll('[data-col="kumo"] *, #forms *, #status *, #tables [data-probe="k-tbl"] *, #more *, body > :not(#root) *')) {
+    if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+    const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.opacity === '0') continue;
+    const fg = parse(cs.color); if (!fg) continue; const bg = bgOf(el); const f = blend(fg, bg);
+    const L1 = lum(f), L2 = lum(bg); const ratio = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05);
+    const big = parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700);
+    const dis = el.closest('[disabled],[aria-disabled="true"],[data-disabled]');
+    if (ratio < (big ? 3 : 4.5) && !dis) res.push([el.textContent.trim().slice(0, 20), Math.round(ratio*100)/100, cs.color]);
+  }
+  return res;
+}
+"""
+
+def run():
+    report = {}
+    with sync_playwright() as p:
+        b = p.chromium.launch(executable_path=os.environ.get("CHROME") or None, args=["--no-sandbox"])
+        for theme in ["night", "day"]:
+            for w, h in [(1440, 1100), (390, 900)]:
+                pg = b.new_page(viewport={"width": w, "height": h})
+                errors = []
+                pg.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+                pg.on("pageerror", lambda e: errors.append(str(e)))
+                pg.goto(f"{BASE}?theme={theme}"); pg.wait_for_timeout(900)
+                key = f"{theme}@{w}"
+                report[key] = {"metrics": pg.evaluate(METRICS), "errors": errors}
+                report[key]["offpalette"] = pg.evaluate(JS, {"tokens": TOKENS[theme], "scope": '[data-col="kumo"], #forms .cardp, #status .cardp, [data-probe="k-tbl"], #more .cardp'})
+                report[key]["contrast"] = pg.evaluate(contrast_js())
+                report[key]["fontsizes"] = pg.evaluate("""() => { const ok = new Set(['11px','12px','13px','14px','15px','16px','18px','22px']); const bad = [];
+                    for (const e of document.querySelectorAll('[data-col="kumo"] *, #forms *, #status *, [data-probe="k-tbl"] *, #more *, #overlays *, [role=dialog] *, [role=listbox] *, [role=menu] *')) {
+                      if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue; const r = e.getBoundingClientRect(); if (r.width <= 1 || r.height <= 1) continue;
+                      const fs = getComputedStyle(e).fontSize; if (!ok.has(fs)) bad.push([e.textContent.trim().slice(0, 10), fs]); } return bad; }""")
+                pg.add_script_tag(content=AXE)
+                axe = pg.evaluate("""async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa','wcag22aa','best-practice'] } });
+                    return r.violations.map(v => [v.id, v.impact, v.nodes.length, v.nodes.slice(0,3).map(n => n.target.join(' '))]); }""")
+                report[key]["axe"] = axe
+                pg.screenshot(path=f"{OUT}/{theme}-{w}.png", full_page=True)
+                if w == 1440:
+                    # focus + hover states
+                    k = pg.locator('[data-probe="k-secondary"]')
+                    k.focus(); pg.keyboard.press("Shift+Tab"); pg.keyboard.press("Tab")
+                    report[key]["focus"] = pg.evaluate("""() => { const e = document.activeElement; const cs = getComputedStyle(e);
+                        return { probe: e.dataset.probe, outline: cs.outlineStyle + ' ' + cs.outlineWidth + ' ' + cs.outlineColor, offset: cs.outlineOffset, shadow: cs.boxShadow }; }""")
+                    pg.mouse.move(0, 0); pg.locator("body").click(position={"x": 5, "y": 5})
+                    k.hover(); pg.wait_for_timeout(400)
+                    report[key]["hover"] = pg.evaluate("""() => { const e = document.querySelector('[data-probe="k-secondary"]'); const cs = getComputedStyle(e); return { transform: cs.transform, shadow: cs.boxShadow, bg: cs.backgroundColor }; }""")
+                    pg.locator('[data-probe="k-primary"]').hover(); pg.wait_for_timeout(400)
+                    report[key]["hover-primary"] = pg.evaluate("""() => { const e = document.querySelector('[data-probe="k-primary"]'); const cs = getComputedStyle(e); return { transform: cs.transform, shadow: cs.boxShadow, color: cs.color }; }""")
+                    pg.mouse.move(0, 0)
+                    for o in ["dialog", "menu", "combobox", "autocomplete", "palette", "toast"]:
+                        pg2 = b.new_page(viewport={"width": w, "height": h})
+                        pg2.goto(f"{BASE}?theme={theme}&open={o}"); pg2.wait_for_timeout(900)
+                        report[key][o + "-fontsizes"] = pg2.evaluate("""() => { const ok = new Set(['11px','12px','13px','14px','15px','16px','18px','22px']); const bad = [];
+                            for (const e of document.querySelectorAll('body > :not(#root) *, [role=dialog] *, [role=region][aria-live] *')) {
+                              if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue; const r = e.getBoundingClientRect(); if (r.width <= 1 || r.height <= 1) continue;
+                              const fs = getComputedStyle(e).fontSize; if (!ok.has(fs)) bad.push([e.textContent.trim().slice(0, 10), fs]); } return bad; }""")
+                        pg2.screenshot(path=f"{OUT}/{theme}-{o}.png")
+                        report[key][o + "-offpalette"] = pg2.evaluate(JS, {"tokens": TOKENS[theme], "scope": 'body > :not(#root), [role="dialog"], [role="listbox"], [role="menu"], [role="region"][aria-live]'})
+                        report[key][o + "-portal"] = pg2.evaluate("document.querySelectorAll('body > :not(#root) *, [role=dialog] *, [role=region][aria-live] *').length")
+                        report[key][o + "-contrast"] = pg2.evaluate(contrast_js())
+                        pg2.close()
+                for vw in [320, 360, 760, 1024]:
+                    pg.set_viewport_size({"width": vw, "height": 900}); pg.wait_for_timeout(150)
+                    report[key].setdefault("overflow", {})[vw] = pg.evaluate("[document.documentElement.scrollWidth, innerWidth]")
+                pg.close()
+        b.close()
+    json.dump(report, open(os.path.join(os.path.dirname(__file__), "report.json"), "w"), ensure_ascii=False, indent=1)
+    return report
+
+if __name__ == "__main__":
+    r = run()
+    for k, v in r.items():
+        print("=====", k)
+        m = v["metrics"]
+        for name in ["ts-btn", "k-resource", "ts-btn-video", "k-primary", "k-secondary", "k-danger", "k-sm", "ts-fbtn-on", "k-filter-on", "ts-fbtn-off", "k-filter-off", "k-raw-primary", "ts-lvl", "k-chip", "k-input", "ts-th", "k-th", "ts-td", "k-td", "k-check-on", "k-check-off", "k-switch-on", "k-switch-off", "k-switch-thumb-on", "k-tab-active", "k-badge-success", "body"]:
+            print(f"  {name:16}", m.get(name))
+        print("  scroll", m["scroll"], "overflow", v.get("overflow"))
+        print("  errors", v["errors"][:5])
+        print("  offpalette", len(v["offpalette"]), v["offpalette"][:12])
+        print("  contrast<", v["contrast"][:10])
+        print("  axe", v["axe"])
+        print("  font sizes off-scale", v.get("fontsizes"))
+        for x in ["focus", "hover", "hover-primary"] + [f"{o}-{k}" for o in ["dialog", "menu", "combobox", "autocomplete", "palette", "toast"] for k in ["offpalette", "contrast", "portal", "fontsizes"]]:
+            if x in v: print("  ", x, v[x] if not isinstance(v[x], list) else (len(v[x]), v[x][:8]))

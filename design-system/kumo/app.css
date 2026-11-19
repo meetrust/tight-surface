@@ -1,0 +1,14 @@
+/* 入口样式表示例：Tight Surface + Kumo（Tailwind v4）。字体在第一行加载；
+   tight-surface/bundle.css 是 Design System 的 components/bundle.css，引入前删掉它第一行的 Google Fonts @import。 */
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap");
+
+/* 层顺序：ts-important 最早（!important 在较早的层反而取胜），ts-kumo 最晚（压过 Kumo 工具类） */
+@layer ts-important, theme, base, ts-base, components, utilities, ts-kumo;
+
+@import "tailwindcss";
+@import "@cloudflare/kumo/styles/tailwind";
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+
+@import "./tight-surface/tokens.css";                 /* Design System 的 tokens.css，不加 layer */
+@import "./tight-surface/bundle.css" layer(ts-base);  /* Design System 的 components/bundle.css */
+@import "./kumo-ts/kumo-tight-surface.css";

@@ -1,0 +1,32 @@
+<!-- @dsCard group="Actions" height=220 -->
+<div style="padding:24px;display:grid;gap:20px">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M4.6 2.7v10.6L13.2 8z" fill="currentColor"/></symbol>
+  <symbol id="i-code" viewBox="0 0 16 16"><path d="M5.6 4.2 1.8 8l3.8 3.8M10.4 4.2 14.2 8l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 16 16"><path d="M4.8 11.2 11 5M6.2 5H11v4.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-up" viewBox="0 0 16 16"><path d="M8 13V3.6M3.8 7.6 8 3.4l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.6 4h10.8M2.6 8h10.8M2.6 12h10.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-to" viewBox="0 0 24 16"><path d="M2 8h17.5M15.5 3.8 19.7 8l-4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-to-opt" viewBox="0 0 24 16"><path d="M2 8h15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-dasharray="3 3"/><path d="M15.5 3.8 19.7 8l-4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+    <a class="btn video" href="#" onclick="return false"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg></span><span class="lbl">课程视频<small>YouTube 播放列表</small></span><span class="ext"><svg class="i" aria-hidden="true"><use href="#i-ext"/></svg></span></a>
+    <a class="btn" href="#" onclick="return false"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-code"/></svg></span><span class="lbl">GitHub 仓库<small>作业与笔记</small></span><span class="ext"><svg class="i" aria-hidden="true"><use href="#i-ext"/></svg></span></a>
+    <span class="btn off" aria-disabled="true"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-code"/></svg></span><span class="lbl">暂无公开链接<small>仅视频</small></span></span>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <button class="act primary" type="button">保存</button>
+    <button class="act" type="button">导出 CSV</button>
+    <button class="act ghost" type="button">取消</button>
+    <button class="act danger" type="button">删除模块</button>
+    <button class="act" type="button" disabled>已提交</button>
+    <button class="act sm" type="button">重试</button>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <button class="fbtn" type="button" aria-pressed="true">全部</button>
+    <button class="fbtn" type="button" aria-pressed="false">基础</button>
+    <button class="fbtn" type="button" aria-pressed="false">视觉</button>
+    <button class="copy" type="button">复制</button>
+    <button class="copy ok" type="button">已复制</button>
+  </div>
+</div>

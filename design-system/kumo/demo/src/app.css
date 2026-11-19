@@ -1,0 +1,30 @@
+/* 层顺序必须先声明：ts-important 最早（!important 反向取胜），ts-kumo 最晚（压过 Kumo 工具类） */
+@layer ts-important, theme, base, ts-base, components, utilities, ts-kumo;
+
+@import "tailwindcss";
+@import "@cloudflare/kumo/styles/tailwind";
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+
+@import "@fontsource/chakra-petch/500.css";
+@import "@fontsource/chakra-petch/600.css";
+@import "@fontsource/chakra-petch/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/600.css";
+@import "@fontsource/jetbrains-mono/700.css";
+@import "@fontsource/noto-sans-sc/400.css";
+@import "@fontsource/noto-sans-sc/500.css";
+@import "@fontsource/noto-sans-sc/700.css";
+@import "@fontsource/noto-sans-sc/900.css";
+
+@import "./tight-surface/tokens.css";                 /* 不加 layer：TS token 压过 Tailwind 同名默认值 */
+@import "./tight-surface/bundle.css" layer(ts-base);  /* TS 组件类与元素样式让位给 Kumo 工具类 */
+@import "./kumo-ts/kumo-tight-surface.css";
+
+/* demo layout only */
+.demo { max-width: 1160px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 48px) 96px; }
+.demo section { margin-top: 48px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.cardp { padding: 24px; border: 1px solid var(--rule); border-radius: var(--r-lg); background: var(--panel); min-width: 0; }
+.lab { font-family: var(--font-display); font-size: 12px; letter-spacing: .14em; color: var(--faint); text-transform: uppercase; margin: 0 0 12px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }

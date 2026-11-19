@@ -1,0 +1,6 @@
+node_modules/
+__pycache__/
+tools/out/
+design-system/kumo/qa/shots/
+design-system/kumo/qa/report.json
+.DS_Store
