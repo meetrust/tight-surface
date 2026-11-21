@@ -107,3 +107,9 @@ CHANGELOG.md          版本记录 · Release notes
 |---|---|---|
 | [大模型可视化学习指南](https://meetrust.github.io/llm-visual-guide/)<br><sub>LLM Visual Guide</sub> | 手册版式，左侧目录<br><sub>Handbook layout with a side TOC</sub> | [llm-visual-guide](https://github.com/meetrust/llm-visual-guide) |
 | [斯坦福 AI 课程地图](https://meetrust.github.io/stanford-ai-courses/)<br><sub>Stanford AI Course Map</sub> | 地图版式，顶部导航<br><sub>Map layout with a top nav</sub> | [stanford-ai-courses](https://github.com/meetrust/stanford-ai-courses) |
+
+## 许可证 · License
+
+代码、样式表、token 和脚本采用 [MIT](LICENSE) 许可；README、设计说明等原创文档采用 [CC BY 4.0](LICENSE-DOCS.md) 许可。
+
+Code, stylesheets, tokens and scripts are under the MIT license; original documentation such as this README and the design notes is under CC BY 4.0.
