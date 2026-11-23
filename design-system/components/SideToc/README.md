@@ -5,7 +5,7 @@
 - 一级链接 36px，二级子项 32px（等宽字体，前置 7px 数据色圆点）。
 - 当前项：琥珀 9% 底 + 左侧 3px 琥珀竖条 + 编号变琥珀。
 - 底部 `.toc-meta` 写数据核对日期与估计口径。
-- 抽屉：`.menu-btn`（40px，16px 菜单图标 + “目录”），展开时 `shadow-drawer`，`aria-expanded` 同步，Esc 关闭。
+- 抽屉：`.menu-btn`（40px，16px 菜单图标加“目录”二字），展开时 `shadow-drawer`，`aria-expanded` 同步，Esc 关闭。
 
 ## 不要
 - 目录编号与章节编号必须一一对应，包括“来源”。

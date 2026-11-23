@@ -2,6 +2,14 @@
 
 版本号遵循语义化版本。v2.3.0 是迁入 GitHub 时的第一个标签；更早的版本按 Design System artifact 的修改记录补记，没有对应的 Git 标签。
 
+## [2.3.1] · 2026-11-23
+
+### 修正
+- ApprovalCard 与 SideToc 的用法说明不再用“+”串联两项，行内代码与引号之间的间距统一。
+
+### 验收
+- 22 个预览在 Night / Day、1000 / 390 / 320px 下全部通过（`tools/check_components.py`，含 axe-core 扫描）。
+
 ## [2.3.0] · 2026-11-16
 
 ### 新增
