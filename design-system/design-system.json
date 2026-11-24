@@ -18,8 +18,8 @@
  },
  "lastChange": {
   "by": "韩同学",
-  "at": "2026-11-24T18:04:00Z",
+  "at": "2026-11-24T18:24:00Z",
   "via": "Claude chat",
-  "note": "v2.4.0 默认图标库改为 Lucide 1.71.0：新增 icons/sprite.svg 与许可声明，图标 id 统一为 i-<Lucide 名>，描边 2；React 用 lucide-react；22 个预览全部通过验收"
+  "note": "v2.4.1 审校修正：tokens 里 bad 的用途改为 i-x；React 描边规则补上 nonScalingStroke；连线图例两个图标在 React 里也用 sprite；Icon 预览窄屏不再折行；22 个预览全部通过验收"
  }
 }

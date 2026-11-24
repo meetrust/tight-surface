@@ -1,7 +1,9 @@
-<!-- Tight Surface icon sprite (v2.4.0)
+<!-- Tight Surface icon sprite (v2.4.1)
      Icons: Lucide v1.71.0, https://lucide.dev, ISC License; arrow-up, arrow-up-right, check, chevron-right, code, download, x
      derive from Feather (MIT). Full notices: LICENSE-lucide.txt next to this file.
-     i-move-right-dashed is Tight Surface's own variant of move-right (dashed shaft for optional edges).
+     Every symbol is copied unchanged from lucide-static 1.71.0 except the two edge-legend marks: i-move-right is move-right
+     with its viewBox cropped to 24×16, and i-move-right-dashed is Tight Surface's own variant of it (dashed shaft for
+     optional edges). Neither has a lucide-react equivalent, so React pages draw them from this sprite too.
      Use: copy the <symbol> elements a page needs into one hidden inline <svg> at the top of <body>, keep the
      "@license lucide-static v1.71.0 - ISC" comment above it, then draw
      <svg class="i" aria-hidden="true"><use href="#i-name"/></svg>. Stroke comes from .i in components/bundle.css. -->

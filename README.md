@@ -9,7 +9,7 @@
 单一琥珀强调、信息优先，<br>用于 AI 应用、开发工具与数据叙事页面。<br>
 *An info-first interface language with Night and Day themes and a single amber accent.*
 
-![版本 v2.4.0](https://img.shields.io/badge/version-v2.4.0-ffb347?style=flat-square&labelColor=111723)
+![版本 v2.4.1](https://img.shields.io/badge/version-v2.4.1-ffb347?style=flat-square&labelColor=111723)
 
 [原则 Principles](#设计原则--principles)&nbsp;· [概览 Overview](#概览--overview)&nbsp;· [目录 Contents](#目录--contents)&nbsp;· [使用 Usage](#使用--usage)&nbsp;· [版本 Versioning](#版本--versioning)
 

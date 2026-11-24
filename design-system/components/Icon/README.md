@@ -2,10 +2,10 @@
 
 ## 两种接入方式
 - **静态页面、Artifact**：内联 sprite。从 `icons/sprite.svg` 复制页面要用的 `<symbol>`，放进 `<body>` 开头一个隐藏的内联 `<svg>`，上面保留一行 `<!-- @license lucide-static v1.71.0 - ISC -->`；画图标写 `<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>`。symbol 里只有形状，描边由 `.i` 统一提供。不在运行时从 CDN 加载图标。
-- **React**：`lucide-react@1.71.0`（精确版本）。根节点包一层 `<LucideProvider className="i">`，每个图标都带上 `.i`，自动套用下面的尺寸和描边。尺寸由 CSS 决定，`size` 属性不生效；不改 `strokeWidth`，不用 `absoluteStrokeWidth`。没有 `aria-label` 的图标，lucide-react 会自动加 `aria-hidden="true"`。
+- **React**：`lucide-react@1.71.0`（精确版本）。根节点包一层 `<LucideProvider className="i">`，每个图标都带上 `.i`，自动套用下面的尺寸和描边。尺寸由 CSS 决定，`size` 属性不生效；不改 `strokeWidth`，不用 `nonScalingStroke`（及其旧名 `absoluteStrokeWidth`）。没有 `aria-label` 的图标，lucide-react 会自动加 `aria-hidden="true"`。
 
 ## 命名
-sprite 的 id 一律是 `i-` 加 Lucide 图标名，与 lucide-react 组件一一对应：`i-arrow-up-right` 对应 `<ArrowUpRight />`。需要新图标时，在 lucide.dev 查到名字，从 lucide-static 1.71.0 的 `sprite.svg` 复制同名 symbol，把 id 改成 `i-<名字>`，加进 `icons/sprite.svg`。
+sprite 的 id 一律是 `i-` 加 Lucide 图标名，与 lucide-react 组件一一对应：`i-arrow-up-right` 对应 `<ArrowUpRight />`。连线图例的 `i-move-right` 和 `i-move-right-dashed` 是例外：前者裁掉了上下留白，后者是自定义变体，React 页面里也用 sprite 画（`<svg className="i"><use href="#i-move-right" /></svg>`），不用 `<MoveRight />`。需要新图标时，在 lucide.dev 查到名字，从 lucide-static 1.71.0 的 `sprite.svg` 复制同名 symbol，把 id 改成 `i-<名字>`，加进 `icons/sprite.svg`。
 
 ## 清单
 | id | lucide-react | 用途 |
@@ -19,8 +19,8 @@ sprite 的 id 一律是 `i-` 加 Lucide 图标名，与 lucide-react 组件一�
 | `i-check` | `Check` | 建议、成功 |
 | `i-x` | `X` | 误区、失败 |
 | `i-download` | `Download` | 导出、下载 |
-| `i-move-right` | `MoveRight` | 连线图例：必经前置（viewBox 裁成 24×16） |
-| `i-move-right-dashed` | — | 连线图例：推荐或可选。唯一的自定义变体，在 `move-right` 的基础上把杆改成虚线 |
+| `i-move-right` | —（源自 `MoveRight`） | 连线图例：必经前置。viewBox 裁成 24×16，React 里也用 sprite |
+| `i-move-right-dashed` | — | 连线图例：推荐或可选。唯一的自定义变体，在 `move-right` 的基础上把杆改成虚线，React 里也用 sprite |
 
 ## 尺寸（按场景固定）
 胶囊、紧凑操作按钮 12px（`icon-xs`）· 外链箭头 / 图例 / 卡片角标 13px（`icon-sm`）· 资源链接按钮和操作按钮 15px（`icon-md`）· 目录按钮 16px（`icon-menu`）· 回到顶部 18px（`icon-lg`）· 连线图例 22×14（`icon-edge`）。

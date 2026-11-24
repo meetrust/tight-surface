@@ -2,6 +2,18 @@
 
 版本号遵循语义化版本。v2.3.0 是迁入 GitHub 时的第一个标签；更早的版本按 Design System artifact 的修改记录补记，没有对应的 Git 标签。
 
+## [2.4.1] · 2026-11-24
+
+### 修正
+- `tokens.json` 里 `bad` 的用途说明仍写着 `i-cross`，改为 `i-x`。
+- React 的描边规则补上 `nonScalingStroke`：lucide-react 1.71.0 里它取代了已弃用的 `absoluteStrokeWidth`，两个都不用。
+- 连线图例的 `i-move-right`（裁剪过 viewBox）和 `i-move-right-dashed`（自定义变体）没有对应的 lucide-react 组件，React 页面里也用 sprite 画；Icon 说明、预览、设计说明、sprite 注释和技能都写明了这一点。
+- Icon 预览：390px 下 `i-move-right-dashed` 的 id 折成两行，内联间距 10px、6px 也不在 4px 刻度上。改为 8px 间距、id 不换行、列宽至少 164px，320–1000px 下 id 和说明都在一行内。
+- 2.4.0 的验收记录改为准确表述：9 个取自官方的图标与 lucide-static 1.71.0 逐字一致，连线图例的两个图标是有意的改动。
+
+### 验收
+- 从 GitHub 重新克隆后复查：22 个预览在 Night / Day、1000 / 390 / 320px 下全部通过（含 axe-core 与图标检查），README 检查 0 项；Kumo 对照页 lint、构建与 `kumo/qa/probe.py` 全部为 0，按钮图标实测 15 / 12px、描边 2；Artifact 与仓库文件逐个哈希一致。
+
 ## [2.4.0] · 2026-11-24
 
 ### 新增
@@ -15,7 +27,7 @@
 - `.i` 自带 Lucide 的描边样式；ThinkingTrace 的折叠箭头改用 `i-chevron-right`。
 
 ### 验收
-- 22 个预览在 Night / Day、1000 / 390 / 320px 下全部通过（`tools/check_components.py`，含 axe-core 与新的图标检查）；sprite 与 lucide-static 1.71.0 逐个比对一致。
+- 22 个预览在 Night / Day、1000 / 390 / 320px 下全部通过（`tools/check_components.py`，含 axe-core 与新的图标检查）；sprite 里 9 个取自官方的图标与 lucide-static 1.71.0 逐字一致，连线图例的两个图标是有意的裁剪和变体。
 - Kumo 对照页加入带图标的按钮后，`kumo/qa/probe.py` 在 Night / Day、1440 / 390px 下全部为 0；ESLint 规则测试通过。
 
 ## [2.3.1] · 2026-11-23

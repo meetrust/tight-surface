@@ -126,7 +126,7 @@
 ## 图标
 
 - 默认图标库是 Lucide，固定在 1.71.0：24×24 网格，描边 2，圆头圆角，`currentColor`。页面里不混用其他图标库；Kumo 组件内部的 Phosphor 图标是唯一例外。
-- 静态页面和 Artifact 用内联 sprite：从 `icons/sprite.svg` 复制需要的 symbol，id 一律是 `i-` 加 Lucide 名（`i-arrow-up-right`），描边由 `.i` 提供，不从 CDN 加载。React 项目用 `lucide-react@1.71.0`，根节点包 `<LucideProvider className="i">`，组件名与 id 一一对应（`<ArrowUpRight />`）。细节和旧图标对照表见 Icon 组件。
+- 静态页面和 Artifact 用内联 sprite：从 `icons/sprite.svg` 复制需要的 symbol，id 一律是 `i-` 加 Lucide 名（`i-arrow-up-right`），描边由 `.i` 提供，不从 CDN 加载。React 项目用 `lucide-react@1.71.0`，根节点包 `<LucideProvider className="i">`，组件名与 id 一一对应（`<ArrowUpRight />`）；连线图例的 `i-move-right`、`i-move-right-dashed` 经过裁剪或改造，React 里也用 sprite。细节和旧图标对照表见 Icon 组件。
 - 尺寸按场景固定：胶囊和紧凑操作按钮 12px、外链箭头 / 图例 13px、资源链接按钮和操作按钮 15px、目录按钮 16px、回到顶部 18px、连线图例 22×14。
 - 不用字符做图标（☰ ↑ ↗ ▶ ◆ ▍ ✓ ✕）；伪元素里需要图标时，用同一个 Lucide 图标的 path 作为 `mask`，并在 `forced-colors: active` 下改为 `forced-color-adjust: none; background: CanvasText`，否则图标会消失。例外只有两个：正文中表示流程的“→”，以及带 `aria-label` 的 ★ 星级。
 - 本系统没有 Logo，品牌名用文字排出（上行 `brand-mark` 英文大写，下行中文名）。
