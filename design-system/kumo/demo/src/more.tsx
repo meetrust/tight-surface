@@ -8,6 +8,7 @@ import { TsButton } from "./kumo-ts/adapters";
 
 const params = new URLSearchParams(location.search);
 const open = params.get("open");
+const PAGINATION_LABELS = { navigation: "分页", firstPage: "第一页", previousPage: "上一页", nextPage: "下一页", lastPage: "最后一页", pageNumber: "页码", pageSize: "每页条数" };
 const models = ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "glm-5.3", "deepseek-v4"];
 
 type Cmd = { id: string; title: string };
@@ -51,8 +52,8 @@ export function MoreKumo() {
             <Breadcrumbs.Separator />
             <Breadcrumbs.Current>调用记录</Breadcrumbs.Current>
           </Breadcrumbs>
-          <Combobox value={combo} onValueChange={(v) => setCombo(v as string | null)} items={models} defaultOpen={open === "combobox"}>
-            <Combobox.TriggerInput placeholder="选择模型" aria-label="选择模型" />
+          <Combobox label="模型" value={combo} onValueChange={(v) => setCombo(v as string | null)} items={models} defaultOpen={open === "combobox"}>
+            <Combobox.TriggerInput placeholder="如 claude-sonnet-5-5" clearLabel="清除选择" showOptionsLabel="展开选项" />
             <Combobox.Content>
               <Combobox.Empty>没有匹配的模型。</Combobox.Empty>
               <Combobox.List>
@@ -70,7 +71,7 @@ export function MoreKumo() {
           </Autocomplete>
           <TagInput label="标签" description="回车添加，最多 5 个。" placeholder="添加标签" value={tags} onValueChange={setTags} maxValues={5} />
           <Slider label="温度" defaultValue={40} className="w-full max-w-72" />
-          <Pagination page={page} setPage={setPage} perPage={10} totalCount={86} text={() => `第 ${(page - 1) * 10 + 1}–${Math.min(page * 10, 86)} 条，共 86 条`} />
+          <Pagination page={page} setPage={setPage} perPage={10} totalCount={86} labels={PAGINATION_LABELS} text={() => `第 ${(page - 1) * 10 + 1}–${Math.min(page * 10, 86)} 条，共 86 条`} />
           <div className="row">
             <Toasty><ToastButton /></Toasty>
             <TsButton onClick={() => setPalette(true)}>命令面板</TsButton>

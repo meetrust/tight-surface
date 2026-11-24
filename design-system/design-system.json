@@ -18,8 +18,8 @@
  },
  "lastChange": {
   "by": "韩同学",
-  "at": "2026-11-24T18:24:00Z",
+  "at": "2026-11-24T18:50:00Z",
   "via": "Claude chat",
-  "note": "v2.4.1 审校修正：tokens 里 bad 的用途改为 i-x；React 描边规则补上 nonScalingStroke；连线图例两个图标在 React 里也用 sprite；Icon 预览窄屏不再折行；22 个预览全部通过验收"
+  "note": "v2.5.0 借鉴 Taste Skill 与 Impeccable 补进九条规则：按钮文案、占位内容、可见标签、每组一个主操作、并排对齐、行长 75ch、手机贴边 16px、空白带、章节间距；新增 tools/page_check.py；22 个预览全部通过验收"
  }
 }

@@ -9,6 +9,9 @@ import { Chip, FilterButton, ResourceButton, TsButton } from "./kumo-ts/adapters
 import { applyTheme, type TsTheme } from "./kumo-ts/theme";
 import { MoreKumo } from "./more";
 
+/** Kumo 的无障碍名称默认是英文，一律传中文（见 kumo.md）。 */
+const TABS_LABELS = { scrollStart: "向左滚动标签", scrollEnd: "向右滚动标签" };
+
 const params = new URLSearchParams(location.search);
 const startTheme: TsTheme = params.get("theme") === "day" ? "day" : "night";
 applyTheme(startTheme);
@@ -67,7 +70,7 @@ function App() {
                 <TsButton tone="primary" data-probe="k-primary">保存更改</TsButton>
                 <TsButton data-probe="k-secondary">取消</TsButton>
                 <TsButton tone="danger" data-probe="k-danger">删除</TsButton>
-                <TsButton tone="ghost">更多</TsButton>
+                <TsButton tone="ghost">跳过</TsButton>
                 <TsButton icon={<Download />} data-probe="k-icon">导出 CSV</TsButton>
                 <TsButton size="sm" icon={<RotateCcw />} data-probe="k-icon-sm">重试</TsButton>
                 <TsButton size="sm" data-probe="k-sm">小号</TsButton>
@@ -111,9 +114,9 @@ function App() {
             </div>
           </div>
           <div className="cardp" style={{ marginTop: 24 }}>
-            <Tabs variant="underline" selectedValue="t1" tabs={[{ value: "t1", label: "概览" }, { value: "t2", label: "调用记录" }, { value: "t3", label: "设置" }]} />
+            <Tabs variant="underline" selectedValue="t1" labels={TABS_LABELS} tabs={[{ value: "t1", label: "概览" }, { value: "t2", label: "调用记录" }, { value: "t3", label: "设置" }]} />
             <div style={{ marginTop: 16 }}>
-              <Tabs variant="segmented" selectedValue="d" tabs={[{ value: "d", label: "日" }, { value: "w", label: "周" }, { value: "m", label: "月" }]} />
+              <Tabs variant="segmented" selectedValue="d" labels={TABS_LABELS} tabs={[{ value: "d", label: "日" }, { value: "w", label: "周" }, { value: "m", label: "月" }]} />
             </div>
           </div>
         </section>
@@ -193,7 +196,7 @@ function App() {
 
         <MoreKumo />
 
-        <footer style={{ marginTop: 64, paddingTop: 16, borderTop: "1px solid var(--rule)", fontSize: 12, color: "var(--faint)", lineHeight: 1.7 }}>
+        <footer style={{ marginTop: 64, paddingTop: 16, borderTop: "1px solid var(--rule)", fontSize: 12, color: "var(--faint)", lineHeight: 1.7, maxWidth: "75ch" }}>
           核对日期 2026-11-16 · @cloudflare/kumo 2.18.1 · Tailwind CSS 4.3.5 · 左列为 Tight Surface 原生组件，右列为 Kumo 组件加适配层
           <br />与 Tight Surface 设计系统同一系列
         </footer>

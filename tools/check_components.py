@@ -10,6 +10,9 @@ Renders every design-system/components/*/preview.html in the Night and Day theme
   - icons: every <symbol> in a preview is copied verbatim from design-system/icons/sprite.svg
     (Lucide), the Lucide licence line sits above it, and every <use href="#i-..."> points at
     a symbol defined in the same preview
+  - the page checks that apply to one component (tools/page_check.py): placeholder text,
+    generic button copy, visible field labels and placeholder contrast, one primary action
+    per group, and boxes in one row aligned at the top. Links to "#" are fine in previews.
 
 Usage:  pip install playwright && python3 -m playwright install chromium
         npm install            # optional, adds axe-core
@@ -17,12 +20,15 @@ Usage:  pip install playwright && python3 -m playwright install chromium
 """
 import os, re, sys
 from playwright.sync_api import sync_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import page_check
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DS = os.path.join(ROOT, "design-system")
 AXE_PATH = os.path.join(ROOT, "node_modules", "axe-core", "axe.min.js")
 SHOTS = os.path.join(ROOT, "tools", "out")
 
+PAGE_CHECKS = ["placeholder", "button-copy", "field-label", "primary", "row-align"]
 THEMES = [None, "day"]                      # None = Night (the default on :root)
 WIDTHS = [1000, 390, 320]
 OVERFLOW_EXEMPT = {"Cover"}                 # 960 x 288 gallery cover, fixed by design
@@ -143,6 +149,8 @@ def main():
                             if x["ratio"] < x["need"] and not x["transparent"]:
                                 problems.append(f"contrast {x['ratio']}:1 < {x['need']} · {where} · {x['cls'] or '-'} “{x['text']}”")
                         if ground == "void":
+                            for f in page_check.run(pg, PAGE_CHECKS, root="#wrap", links=False):
+                                problems.append(f"{f['check']} · {where} · {f['sel']} “{f['text']}” · {f['msg']}")
                             o = pg.evaluate(OVERFLOW_JS)
                             if c not in OVERFLOW_EXEMPT and (o["sw"] > o["W"] or o["out"]):
                                 problems.append(f"overflow · {where} · scrollWidth {o['sw']} · {o['out']}")
