@@ -1,7 +1,7 @@
 思考轨迹：把 Agent 的推理、检索、编码步骤收在一个可折叠的面板里，进行中展开，完成后收起成一行。
 
 ## 用法
-- 结构：`<details class="trace">` > `<summary>`（状态点 `.trace-dot` + 标题 `.trace-title` + 用时 `.trace-time` + 摘要 `.trace-meta` + 箭头 `.trace-caret`）+ `<ol class="trace-steps">`。
+- 结构：`<details class="trace">` > `<summary>`（状态点 `.trace-dot` + 标题 `.trace-title` + 用时 `.trace-time` + 摘要 `.trace-meta` + 折叠箭头 `.trace-caret`，用 `i-chevron-right`，展开时转 90°）+ `<ol class="trace-steps">`。
 - 状态：进行中写 `data-state="running"` 和 `open`，标题写“思考中”，状态点是带 `pulse` 的琥珀点；完成后去掉 `data-state` 和 `open`，标题改为“已思考”，状态点变 `faint`。
 - 每一步：分类胶囊 `.tk`（步骤 `l0`、检索 `l1`、推理 `l2`、编码 `l6`，整个产品固定）+ 一句话 + 用时 `.t`。分类名固定两个字，胶囊列宽 64px。各步用时之和等于标题里的总用时。
 - 用时用 Display 字体和 tabular-nums，格式“12.4 s”；摘要写“4 步 · 1 次检索”。

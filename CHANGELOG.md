@@ -2,6 +2,22 @@
 
 版本号遵循语义化版本。v2.3.0 是迁入 GitHub 时的第一个标签；更早的版本按 Design System artifact 的修改记录补记，没有对应的 Git 标签。
 
+## [2.4.0] · 2026-11-24
+
+### 新增
+- 默认图标库改为 Lucide，固定在 1.71.0（ISC 许可）：24×24 网格，描边 2，圆头圆角。静态页面从新增的 `icons/sprite.svg` 复制图标，React 项目用 `lucide-react@1.71.0` 并在根节点包 `<LucideProvider className="i">`；许可声明在 `icons/LICENSE-lucide.txt`。
+- 图标 id 统一为 `i-` 加 Lucide 名，与 lucide-react 组件一一对应；新增 `i-chevron-right`、`i-download`。
+- 操作按钮里的图标统一为 15px，`.act.sm` 里 12px；Kumo 按钮同样处理（`TsButton` 新增 `data-ts-size`）。
+- `tools/check_components.py` 检查每个预览的 sprite 与 `icons/sprite.svg` 逐字一致、带 Lucide 许可注释；Kumo 的 ESLint 规则禁止应用代码引入其他图标库。
+
+### 变更
+- 旧图标换成 Lucide 图形，部分 id 改名：`i-ext` → `i-arrow-up-right`、`i-up` → `i-arrow-up`、`i-cross` → `i-x`、`i-to` → `i-move-right`、`i-to-opt` → `i-move-right-dashed`；`i-play`、`i-code`、`i-menu`、`i-check` 不改名，`i-play` 从实心变为描边。已交付的页面带着自己的旧 sprite，不受影响，迁移对照见 Icon 组件。
+- `.i` 自带 Lucide 的描边样式；ThinkingTrace 的折叠箭头改用 `i-chevron-right`。
+
+### 验收
+- 22 个预览在 Night / Day、1000 / 390 / 320px 下全部通过（`tools/check_components.py`，含 axe-core 与新的图标检查）；sprite 与 lucide-static 1.71.0 逐个比对一致。
+- Kumo 对照页加入带图标的按钮后，`kumo/qa/probe.py` 在 Night / Day、1440 / 390px 下全部为 0；ESLint 规则测试通过。
+
 ## [2.3.1] · 2026-11-23
 
 ### 修正

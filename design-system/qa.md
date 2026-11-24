@@ -18,6 +18,7 @@
 - 内容胶囊 26，微型标签 20，资源链接按钮 48，操作按钮和筛选按钮 36，紧凑操作按钮 26，复制按钮 28，导航链接 40，回到顶部 44。
 - 用 Kumo 的页面：操作按钮、输入框、下拉、Tabs 36，表格和工具栏内的紧凑控件 26，Badge 20。
 - 图标按场景：12 / 13 / 15 / 16 / 18 / 22×14。
+- 图标只来自 Lucide 1.71.0：页面 sprite 里的 symbol 与 `icons/sprite.svg` 逐字一致，上方有 `@license lucide-static v1.71.0 - ISC` 注释（组件预览由 `tools/check_components.py` 检查）；React 项目只从 `lucide-react` 引入图标（`kumo/eslint-rules.js` 检查）。描边一律 2。
 - 统计卡、图表卡的高度允许随内容变化，但同一行要对齐。
 
 ## 3. 布局

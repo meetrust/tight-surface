@@ -1,8 +1,9 @@
 <!-- @dsCard group="Agent" height=360 subtitle="任务行：完成 · 进行中 · 失败 · 排队" -->
 <div style="padding:24px;max-width:680px">
+  <!-- @license lucide-static v1.71.0 - ISC -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.2 8.4 6.6 11.6 12.8 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-cross" viewBox="0 0 16 16"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
   </svg>
   <ol class="tasks">
     <li class="task" data-state="done">
@@ -19,7 +20,7 @@
     <li class="task" data-state="failed">
       <span class="task-no">03</span>
       <div class="task-main"><p class="task-title">同步账单到表格</p><p class="task-note">表格接口超时，已重试 2 次</p></div>
-      <div class="task-side"><span class="st bad"><svg class="i" aria-hidden="true"><use href="#i-cross"/></svg>失败</span><button class="act sm" type="button">重试</button></div>
+      <div class="task-side"><span class="st bad"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>失败</span><button class="act sm" type="button">重试</button></div>
     </li>
     <li class="task" data-state="queued">
       <span class="task-no">04</span>

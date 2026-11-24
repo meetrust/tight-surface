@@ -20,7 +20,7 @@ export function TsButton({
   const variant =
     tone === "primary" ? "primary" : tone === "danger" ? "destructive" : tone === "ghost" ? "ghost" : "secondary";
   const ts = tone === "primary" ? "primary" : tone === "danger" ? "danger" : undefined;
-  return <Button {...(props as KumoButtonProps)} variant={variant} size={size} data-ts-variant={ts} />;
+  return <Button {...(props as KumoButtonProps)} variant={variant} size={size} data-ts-variant={ts} data-ts-size={size} />;
 }
 
 /** 筛选按钮 = TS .fbtn：36px 胶囊，aria-pressed 表示选中。 */

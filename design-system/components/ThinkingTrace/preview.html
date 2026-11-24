@@ -1,10 +1,11 @@
 <!-- @dsCard group="Agent" height=320 subtitle="思考轨迹：进行中展开 · 完成后收起" -->
 <div style="padding:24px;display:grid;gap:12px;max-width:680px">
+  <!-- @license lucide-static v1.71.0 - ISC -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <symbol id="i-to" viewBox="0 0 24 16"><path d="M2 8h17.5M15.5 3.8 19.7 8l-4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
   </svg>
   <details class="trace" data-state="running" open>
-    <summary><span class="trace-dot" aria-hidden="true"></span><span class="trace-title">思考中</span><span class="trace-time">12.4 s</span><span class="trace-meta">4 步 · 1 次检索</span><svg class="i trace-caret" aria-hidden="true"><use href="#i-to"/></svg></summary>
+    <summary><span class="trace-dot" aria-hidden="true"></span><span class="trace-title">思考中</span><span class="trace-time">12.4 s</span><span class="trace-meta">4 步 · 1 次检索</span><svg class="i trace-caret" aria-hidden="true"><use href="#i-chevron-right"/></svg></summary>
     <ol class="trace-steps">
       <li><span class="tk" style="--c: var(--l0)">步骤</span><p>拆解问题：先汇总本月各模型的 Token 用量，再找出增长最快的路由。</p><span class="t">0.8 s</span></li>
       <li><span class="tk" style="--c: var(--l1)">检索</span><p>读取 <code>usage_2026-11.csv</code>，共 1,284 行。</p><span class="t">2.1 s</span></li>
@@ -13,7 +14,7 @@
     </ol>
   </details>
   <details class="trace">
-    <summary><span class="trace-dot" aria-hidden="true"></span><span class="trace-title">已思考</span><span class="trace-time">8.6 s</span><span class="trace-meta">3 步 · 无检索</span><svg class="i trace-caret" aria-hidden="true"><use href="#i-to"/></svg></summary>
+    <summary><span class="trace-dot" aria-hidden="true"></span><span class="trace-title">已思考</span><span class="trace-time">8.6 s</span><span class="trace-meta">3 步 · 无检索</span><svg class="i trace-caret" aria-hidden="true"><use href="#i-chevron-right"/></svg></summary>
     <ol class="trace-steps">
       <li><span class="tk" style="--c: var(--l0)">步骤</span><p>确认需要比较的两种路由策略。</p><span class="t">2.0 s</span></li>
       <li><span class="tk" style="--c: var(--l2)">推理</span><p>按上月请求结构估算两种策略的成本差。</p><span class="t">4.1 s</span></li>

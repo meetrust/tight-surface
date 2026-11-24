@@ -7,6 +7,9 @@ Renders every design-system/components/*/preview.html in the Night and Day theme
   - no horizontal overflow (the fixed-size Cover card is exempt)
   - no visible text under 12px (brand mark and nav numbers at 11px are documented exceptions)
   - axe-core: zero violations (wcag2a/aa, wcag21aa, wcag22aa, best-practice), when installed
+  - icons: every <symbol> in a preview is copied verbatim from design-system/icons/sprite.svg
+    (Lucide), the Lucide licence line sits above it, and every <use href="#i-..."> points at
+    a symbol defined in the same preview
 
 Usage:  pip install playwright && python3 -m playwright install chromium
         npm install            # optional, adds axe-core
@@ -72,6 +75,31 @@ SMALL_JS = r"""() => {
   return out;
 }"""
 
+SYMBOL_RE = re.compile(r'<symbol id="([^"]+)"[\s\S]*?</symbol>')
+
+
+def icon_problems(comps):
+    """Static check: preview sprites must be exact copies of the canonical Lucide sprite."""
+    sprite = open(os.path.join(DS, "icons", "sprite.svg"), encoding="utf-8").read()
+    canon = {m.group(1): m.group(0) for m in SYMBOL_RE.finditer(sprite)}
+    out = []
+    for c in comps:
+        html = open(os.path.join(DS, "components", c, "preview.html"), encoding="utf-8").read()
+        defined = {}
+        for m in SYMBOL_RE.finditer(html):
+            sid = m.group(1); defined[sid] = m.group(0)
+            if sid not in canon:
+                out.append(f"icon · {c} · symbol {sid} is not in icons/sprite.svg")
+            elif m.group(0) != canon[sid]:
+                out.append(f"icon · {c} · symbol {sid} differs from icons/sprite.svg")
+        if defined and "@license lucide-static v1.71.0 - ISC" not in html:
+            out.append(f"icon · {c} · the Lucide licence line is missing above the sprite")
+        for ref in sorted(set(re.findall(r'href="#(i-[a-z0-9-]+)"', html))):
+            if ref not in defined:
+                out.append(f"icon · {c} · #{ref} is used but not defined in the preview")
+    return out
+
+
 AXE_JS = r"""async () => {
   const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa','wcag22aa','best-practice'] },
     rules: { 'page-has-heading-one': { enabled: false }, 'landmark-one-main': { enabled: false }, 'region': { enabled: false } } });
@@ -96,7 +124,7 @@ def main():
     axe = open(AXE_PATH, encoding="utf-8").read() if os.path.exists(AXE_PATH) else None
     comps = sorted(d for d in os.listdir(os.path.join(DS, "components"))
                    if os.path.isfile(os.path.join(DS, "components", d, "preview.html")))
-    problems = []
+    problems = icon_problems(comps)
     if shots: os.makedirs(SHOTS, exist_ok=True)
     with sync_playwright() as p:
         b = p.chromium.launch()

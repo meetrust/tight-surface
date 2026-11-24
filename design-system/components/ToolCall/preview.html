@@ -1,14 +1,15 @@
 <!-- @dsCard group="Agent" height=280 subtitle="工具调用胶囊：成功 · 失败 · 进行中 · 展开参数" -->
 <div style="padding:24px;max-width:680px">
+  <!-- @license lucide-static v1.71.0 - ISC -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.2 8.4 6.6 11.6 12.8 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-cross" viewBox="0 0 16 16"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
   </svg>
   <p class="tools-sum"><b>4</b> 次工具调用 · <b>2</b> 条消息</p>
   <ul class="tools">
     <li><button class="tool" type="button" aria-expanded="true" aria-controls="tc-1" style="--c: var(--l1)"><svg class="i ok" aria-hidden="true"><use href="#i-check"/></svg><span class="sr-only">成功：</span><span class="nm">read_file</span><span class="arg">→ usage_2026-11.csv</span><span class="ms">0.4 s</span></button></li>
     <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-2" style="--c: var(--l6)"><svg class="i ok" aria-hidden="true"><use href="#i-check"/></svg><span class="sr-only">成功：</span><span class="nm">run_python</span><span class="arg">→ pivot.py</span><span class="ms">3.2 s</span></button></li>
-    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-3" style="--c: var(--l2)"><svg class="i no" aria-hidden="true"><use href="#i-cross"/></svg><span class="sr-only">失败：</span><span class="nm">web_search</span><span class="arg">→ opus 5.5 定价</span><span class="ms">5.0 s</span></button></li>
+    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-3" style="--c: var(--l2)"><svg class="i no" aria-hidden="true"><use href="#i-x"/></svg><span class="sr-only">失败：</span><span class="nm">web_search</span><span class="arg">→ opus 5.5 定价</span><span class="ms">5.0 s</span></button></li>
     <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-4" data-state="running" style="--c: var(--l4)"><span class="sr-only">进行中：</span><span class="nm">write_file</span><span class="arg">→ report.md</span></button></li>
   </ul>
   <div class="tool-detail" id="tc-1">

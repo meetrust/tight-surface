@@ -35,7 +35,7 @@
 - Windows 对比度主题（`forced-colors: active`）会把 background 换成页面底色：组件已给条形、图例色块和里程碑菱形设了 `forced-color-adjust: none`；页面自己用 background 画的数据标记同样处理，遮罩图标改用系统色 `CanvasText`（链接内用 `LinkText`）。
 
 ### 6. 同一系列，不同版式（新增）
-- 必须相同的：全部 token、三套字体及分工、琥珀强调、胶囊和按钮尺寸、图标 sprite、焦点环、动效参数、FIG 编号格式、页脚的系列声明。
+- 必须相同的：全部 token、三套字体及分工、琥珀强调、胶囊和按钮尺寸、图标（Lucide）、焦点环、动效参数、FIG 编号格式、页脚的系列声明。
 - 可以不同的：页面骨架（左侧目录 / 顶部导航）、首屏构图、背景纹理（40px 网格 / 24px 点阵）、章节标题样式（空心大编号 / 编号横条）、每页的标志性图形。
 - 同一个系列里的两个页面在页脚互相署名，例如“与《斯坦福 AI 课程地图》同一设计系列”。
 
@@ -76,7 +76,7 @@
 - 文字四级：正文 `ink`，次级正文 `ink-2`，说明 `dim`，脚注与刻度 `faint`。`muted`（3.0:1）未达标，已不用于任何组件，“暂无”胶囊改用 `faint`；保留这个 token 只为兼容旧页面。对比度要按文字实际所在的底色算：琥珀淡底、着色节点这类变亮的底上，小字用 `dim`，不用 `faint`。
 - 强调：`amber` 是唯一的界面强调色，琥珀实底上的文字用 `on-amber`；`ice` 只表示“可以点”。
 - 数据色：`l0`（基础 / 中性）加 `l1`–`l7` 七个序列，按层级或轨道的顺序固定分配，整页不变。给元素设置 `style="--c: var(--lN)"`，由组件自行派生描边（45%）、淡底（12%）、渐变和发光。
-- 正负反馈：`good` / `bad` 分别是 `l6` / `l5` 的别名，必须配合 `i-check` / `i-cross` 图标或文字使用，不用 ✓ / ✕ 字符。
+- 正负反馈：`good` / `bad` 分别是 `l6` / `l5` 的别名，必须配合 `i-check` / `i-x` 图标或文字使用，不用 ✓ / ✕ 字符。
 - 警告：`warn` 是 `l4` 的别名，规则同 `good` / `bad`。提示类状态（info）用中性的 `ink-2` 文字和 `ink` 6% 淡底，不用 `ice`：`ice` 只表示“可以点”。
 - 浮层：下拉菜单、弹出列表、Toast 和输入框的底色用 `pop`（Night 为 `panel-2`，Day 为 `panel`），不加投影，靠 `rule-2` 描边分层；对话框遮罩为 `void` 80%。
 - 热力：1–5 级用 `heat-N` 作底、`heat-N-ink` 作字，冷（蓝）→ 热（红），每级对比度 Night ≥7.2:1、Day ≥7.1:1。
@@ -125,9 +125,10 @@
 
 ## 图标
 
-- 只用内联 SVG sprite：`i-play`、`i-code`、`i-ext`、`i-up`、`i-menu`、`i-to`、`i-to-opt`、`i-check`、`i-cross`（见 Icon 组件）。16×16 网格，1.7–1.8px 圆头描边，`currentColor`。
-- 尺寸按场景固定：胶囊内 12px、外链箭头 / 图例 13px、按钮主图标 15px、目录按钮 16px、回到顶部 18px、连线图例 22×14。
-- 不用字符做图标（☰ ↑ ↗ ▶ ◆ ▍ ✓ ✕）；伪元素里需要图标时，用同一条 path 作为 `mask`，并在 `forced-colors: active` 下改为 `forced-color-adjust: none; background: CanvasText`，否则图标会消失。例外只有两个：正文中表示流程的“→”，以及带 `aria-label` 的 ★ 星级。
+- 默认图标库是 Lucide，固定在 1.71.0：24×24 网格，描边 2，圆头圆角，`currentColor`。页面里不混用其他图标库；Kumo 组件内部的 Phosphor 图标是唯一例外。
+- 静态页面和 Artifact 用内联 sprite：从 `icons/sprite.svg` 复制需要的 symbol，id 一律是 `i-` 加 Lucide 名（`i-arrow-up-right`），描边由 `.i` 提供，不从 CDN 加载。React 项目用 `lucide-react@1.71.0`，根节点包 `<LucideProvider className="i">`，组件名与 id 一一对应（`<ArrowUpRight />`）。细节和旧图标对照表见 Icon 组件。
+- 尺寸按场景固定：胶囊和紧凑操作按钮 12px、外链箭头 / 图例 13px、资源链接按钮和操作按钮 15px、目录按钮 16px、回到顶部 18px、连线图例 22×14。
+- 不用字符做图标（☰ ↑ ↗ ▶ ◆ ▍ ✓ ✕）；伪元素里需要图标时，用同一个 Lucide 图标的 path 作为 `mask`，并在 `forced-colors: active` 下改为 `forced-color-adjust: none; background: CanvasText`，否则图标会消失。例外只有两个：正文中表示流程的“→”，以及带 `aria-label` 的 ★ 星级。
 - 本系统没有 Logo，品牌名用文字排出（上行 `brand-mark` 英文大写，下行中文名）。
 
 ## 组件选择

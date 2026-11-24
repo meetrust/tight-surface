@@ -6,7 +6,7 @@
 - `.tk`：轨道标签，前面一个 7px 实心圆点。
 - `.k-chip`：卡片小节的英文标签（MECHANISM / HIGHLIGHTS / OUTPUT），大写、字距 0.14em。
 - `.st.v` / `.st.g` / `.st.no`：视频 / 代码 / 暂无，三种资源状态；`.st.no` 用虚线和 `faint` 文字。
-- `.st.ok` / `.st.bad`：任务完成 / 失败（`good` / `bad` 文字加 45% 描边），配 `i-check` / `i-cross` 和文字，用法见 TaskRow。
+- `.st.ok` / `.st.bad`：任务完成 / 失败（`good` / `bad` 文字加 45% 描边），配 `i-check` / `i-x` 和文字，用法见 TaskRow。
 - `.specs`：键值规格条（LANG / SIZE / STARS），8px 圆角，不是胶囊。
 - `.dn-badge` / `.dn-need`：节点内 20px 微型标签，前者实线着色，后者虚线、`dim` 文字（节点底是着色的，faint 在上面不到 4.5:1）。
 

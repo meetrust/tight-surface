@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
+import { LucideProvider, Download, RotateCcw } from "lucide-react";
 import {
   Badge, Banner, Button, Checkbox, Dialog, DropdownMenu, Input, Meter, Radio, Select, Switch, Table, Tabs,
 } from "@cloudflare/kumo";
@@ -67,6 +68,8 @@ function App() {
                 <TsButton data-probe="k-secondary">取消</TsButton>
                 <TsButton tone="danger" data-probe="k-danger">删除</TsButton>
                 <TsButton tone="ghost">更多</TsButton>
+                <TsButton icon={<Download />} data-probe="k-icon">导出 CSV</TsButton>
+                <TsButton size="sm" icon={<RotateCcw />} data-probe="k-icon-sm">重试</TsButton>
                 <TsButton size="sm" data-probe="k-sm">小号</TsButton>
                 <TsButton disabled>禁用</TsButton>
               </div>
@@ -199,4 +202,8 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <LucideProvider className="i">
+    <App />
+  </LucideProvider>,
+);

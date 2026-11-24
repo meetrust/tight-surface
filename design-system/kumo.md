@@ -13,9 +13,9 @@
 | `kumo/eslint-rules.js` | ESLint 规则：禁用图表等组件、强制走适配组件 |
 | `kumo/qa/probe.py.txt`、`kumo/demo/` | 对照页与检查脚本，升级 Kumo 时重跑（脚本存成 .txt，取用时去掉后缀） |
 
-对照页：新建一个 Vite 项目，放入 `kumo/demo/` 的文件；把 `kumo/` 下的适配文件放到 `src/kumo-ts/`，把本系统的 `tokens.css` 和 `components/bundle.css` 放到 `src/tight-surface/`（同样删掉字体 `@import`）；另装 `vite`、`@vitejs/plugin-react`、`axe-core` 和三个 `@fontsource` 字体包。`vite build` 后用 `vite preview --port 4173` 起服务，再跑 `python3 kumo/qa/probe.py`（需要 Python 的 playwright）。
+对照页：新建一个 Vite 项目，放入 `kumo/demo/` 的文件；把 `kumo/` 下的适配文件放到 `src/kumo-ts/`，把本系统的 `tokens.css` 和 `components/bundle.css` 放到 `src/tight-surface/`（同样删掉字体 `@import`）；另装 `vite`、`@vitejs/plugin-react`、`lucide-react`、`axe-core` 和三个 `@fontsource` 字体包。`vite build` 后用 `vite preview --port 4173` 起服务，再跑 `python3 kumo/qa/probe.py`（需要 Python 的 playwright）。
 
-依赖版本锁定为：`@cloudflare/kumo` 2.18.1、`@phosphor-icons/react` 2.1.10、`tailwindcss` 与 `@tailwindcss/vite` 4.3.5、React 18 或 19；用 DatePicker 的中文界面时另装 `react-day-picker` 9.x（Kumo 依赖它）。
+依赖版本锁定为：`@cloudflare/kumo` 2.18.1、`@phosphor-icons/react` 2.1.10（Kumo 自身的依赖，应用代码不直接用）、`lucide-react` 1.71.0、`tailwindcss` 与 `@tailwindcss/vite` 4.3.5、React 18 或 19；用 DatePicker 的中文界面时另装 `react-day-picker` 9.x（Kumo 依赖它）。
 
 ## 接入
 
@@ -104,7 +104,8 @@ Kumo 的四档控件高度正好落在已有的尺寸 token 上，按下表使�
 - Kumo 的默认文案是英文，界面文字一律传中文：DatePicker 传 `locale={zhCN}`（`react-day-picker/locale`），Pagination 用 `text` 写“第 11–20 条，共 86 条”这类文案。
 - Combobox、Select 这类外壳被 grid 或 flex 拉伸时，清除和箭头按钮会下移：放进 grid 时给容器 `align-content: start`。
 - Toast 的弹跳入场动画是 Kumo 自己的缓动曲线，不在“一条缓动、一个时长”的统一范围内；`prefers-reduced-motion` 下会关闭。
-- 传给 Kumo 的图标用 Icon 的 SVG sprite；Kumo 组件内部的下拉箭头、勾选、关闭图标是 Phosphor 的内联 SVG，线宽与 sprite 略有差别，保持原样。
+- 图标用 `lucide-react`：根节点包 `<LucideProvider className="i">`，传给 Kumo 时写 `icon={<Download />}`。按钮里的图标由适配层统一成 15px，`TsButton size="sm"` 里是 12px（靠 `data-ts-size`），描边 2。应用代码不直接引入 `@phosphor-icons/react` 或其他图标库，ESLint 会报错。
+- Kumo 组件内部的下拉箭头、勾选、关闭图标是 Phosphor 的内联 SVG，线宽和造型与 Lucide 略有差别，不改源码换不掉，保持原样。
 - 不要给 Kumo 组件传改颜色、字重、焦点的 className：适配层排在 utilities 之后，这些 className 不会生效。确实需要新样式时加一个 `data-ts-variant` 值，写进适配层。
 - 新组件第一次用到时，先加进 `kumo/demo/` 对照页，跑一遍 `kumo/qa/probe.py` 再上线。
 

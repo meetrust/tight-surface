@@ -10,12 +10,13 @@
   - `.act.ghost` 没有描边和底色，用于“取消”“跳过”这类次要操作。
   - `.act.sm`（26px，与胶囊同高）用在表格行、任务行等紧凑位置。
   - 禁用写 `disabled` 或 `aria-disabled="true"`：虚线 `rule` 描边、`faint` 文字，保留占位。
+  - 图标放在文字前，15px（`.act.sm` 里 12px），例如“导出 CSV”前的 `i-download`。
   - 用了 Kumo 的页面，同样的按钮用适配层的 `TsButton`（`tone` 对应 primary / danger / ghost），两者视觉一致，见“Kumo 适配”。
 - `.fbtn`：胶囊形，`aria-pressed` 表示选中，选中为琥珀实底 + `on-amber` 文字。
 - `.copy`：代码块顶栏里的复制按钮，成功后加 `.ok` 并把文字改为“已复制”。
 - 悬停：上浮 2px（`lift`），描边变 `ice`；`.act.primary` / `.act.danger` 悬停时描边变实色 `amber` / `bad`，底色不变（与 Kumo 的 `TsButton` 一致，也保证 Day 下文字对比度）；只在精确指针设备上生效。
 
 ## 不要
-- 不要用 ▶ ↗ 等字符做图标，只用 SVG（见 Icon）。
+- 不要用 ▶ ↗ 等字符做图标，只用 Lucide 图标（见 Icon）。
 - 同一组按钮的高度必须一致。按钮只有 48（`.btn`）、36（`.act`、`.fbtn`）、28（`.copy`）、26（`.act.sm`）四档，不再增加。
 - `.btn` 只用于去往外部资源的链接；页面内的操作用 `.act`，不要把 `.act` 做成两行标签。

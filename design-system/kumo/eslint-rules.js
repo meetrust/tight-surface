@@ -21,6 +21,7 @@ export const kumoTightSurface = {
       patterns: [
         { group: ["@cloudflare/kumo/components/chart*", "@cloudflare/kumo/components/{empty,table-of-contents,code,cloudflare-logo}"], message: "同上：这些 Kumo 组件不进入 Tight Surface 项目。" },
         { group: ["@cloudflare/kumo/styles/standalone"], message: "只用 Tailwind 路径（@cloudflare/kumo/styles/tailwind），适配层的构建期主题才会生效。" },
+        { group: ["@phosphor-icons/*", "react-icons", "react-icons/*", "@heroicons/*", "@tabler/icons-react", "@radix-ui/react-icons", "@hugeicons/*"], message: "图标统一用 lucide-react（1.71.0），根节点包 <LucideProvider className=\"i\">；Kumo 组件内部自带的 Phosphor 图标不受影响。" },
       ],
     }],
     "no-restricted-syntax": ["error",

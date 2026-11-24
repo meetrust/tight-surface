@@ -125,6 +125,9 @@
     transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease),
                 color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
   }
+  /* 图标是 Lucide（lucide-react，根节点 <LucideProvider className="i">）：按钮里 15px，紧凑按钮 12px，与 .act 一致 */
+  :is([data-kumo-component="Button"], [data-kumo-component="LinkButton"]) .i { width: var(--icon-md); height: var(--icon-md); }
+  [data-ts-size="sm"] .i { width: var(--icon-xs); height: var(--icon-xs); }
 
   /* 6 · 中文字重：只用 Noto Sans SC 已加载的 400 / 500 / 700 / 900（600 会被当成 700 显示）
      正文、选项文字、Tabs、Badge 400；字段标签、Banner 标题、操作按钮保持 Kumo 的 500；

@@ -32,7 +32,7 @@ code {
   font-family: var(--font-mono); font-size: max(.86em, 12px); padding: .1em .42em; border-radius: 5px;
   background: rgba(124, 200, 255, .1); color: var(--inline-code-ink); border: 1px solid rgba(124, 200, 255, .16); overflow-wrap: anywhere;
 }
-.i { display: inline-block; width: 1em; height: 1em; flex: none; vertical-align: -0.14em; }
+.i { display: inline-block; width: 1em; height: 1em; flex: none; vertical-align: -0.14em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } /* Lucide icons: sprite symbols carry geometry only */
 
 /* ---------- SectionHead ---------- */
 .eyebrow { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: var(--fs-2xs); letter-spacing: .18em; text-transform: uppercase; color: var(--amber); }
@@ -99,6 +99,8 @@ code {
 .act.danger { border-color: color-mix(in srgb, var(--bad) 55%, transparent); background: color-mix(in srgb, var(--bad) 11%, transparent); color: var(--bad); }
 .act.ghost { border-color: transparent; background: transparent; }
 .act:disabled, .act[aria-disabled="true"] { border-style: dashed; border-color: var(--rule); background: transparent; color: var(--faint); cursor: default; }
+.act .i { width: var(--icon-md); height: var(--icon-md); }
+.act.sm .i { width: var(--icon-xs); height: var(--icon-xs); }
 
 /* ---------- Chip (26px pills, 20px micro tags) ---------- */
 .lvl, .rel, .tk, .st, .k-chip { display: inline-flex; align-items: center; gap: 6px; min-height: var(--h-pill); padding: 0 10px; border-radius: var(--r-pill); font-size: var(--fs-2xs); line-height: 1.2; white-space: nowrap; }
