@@ -9,7 +9,7 @@
 单一琥珀强调、信息优先，<br>用于 AI 应用、开发工具与数据叙事页面。<br>
 *An info-first interface language with Night and Day themes and a single amber accent.*
 
-![版本 v2.5.0](https://img.shields.io/badge/version-v2.5.0-ffb347?style=flat-square&labelColor=111723)
+![版本 v2.5.1](https://img.shields.io/badge/version-v2.5.1-ffb347?style=flat-square&labelColor=111723)
 
 [原则 Principles](#设计原则--principles)&nbsp;· [概览 Overview](#概览--overview)&nbsp;· [目录 Contents](#目录--contents)&nbsp;· [使用 Usage](#使用--usage)&nbsp;· [版本 Versioning](#版本--versioning)
 
@@ -53,7 +53,7 @@ Tight Surface is a cross-product interface language. One set of tokens and compo
 | [qa.md](design-system/qa.md) | 交付验收清单，共七组<br><sub>The delivery checklist in seven groups</sub> |
 | [github-readme.md](design-system/github-readme.md) | README 写法与检查脚本<br><sub>README rules and the checker script</sub> |
 | [kumo.md](design-system/kumo.md) | Kumo 应用控件的适配层<br><sub>The Kumo adapter for app controls</sub> |
-| [icons](design-system/icons) | Lucide 图标 sprite 与许可声明<br><sub>The Lucide icon sprite and its licence</sub> |
+| [icons](design-system/icons) | Lucide 图标 sprite 与许可声明<br><sub>The Lucide icon sprite and its license</sub> |
 | [components](design-system/components) | 21 个组件的说明与预览<br><sub>Notes and previews for 21 components</sub> |
 | [SKILL.md](skill/SKILL.md) | 同一套规则的 Claude 技能版本<br><sub>The same rules as a Claude skill</sub> |
 
@@ -103,7 +103,7 @@ design-system/        设计系统本体，与 artifact 的 project/ 一一对�
   tokens.json / .css  两套主题的 token · Tokens for both themes
   components/         bundle.css 与 21 个组件 · bundle.css and 21 components
   kumo/               Kumo 适配层与对照页 · Kumo adapter and demo
-  icons/              Lucide 图标 sprite 与许可 · Lucide sprite and licence
+  icons/              Lucide 图标 sprite 与许可 · Lucide sprite and license
   *.md                白昼主题、交互、图表、验收、README 规则 · Day, interaction, charts, QA, README rules
 skill/SKILL.md        tight-surface-ui 技能 · The Claude skill
 tools/                组件、页面和 README 检查，文件清单 · Component, page and README checks, manifest

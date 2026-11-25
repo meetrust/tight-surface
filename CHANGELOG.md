@@ -2,6 +2,16 @@
 
 版本号遵循语义化版本。v2.3.0 是迁入 GitHub 时的第一个标签；更早的版本按 Design System artifact 的修改记录补记，没有对应的 Git 标签。
 
+## [2.5.1] · 2026-11-25
+
+### 修正
+- 设计说明里“555 开头的电话”改为“555-01xx”，与检查脚本、验收清单和技能一致；原写法范围过宽，会误伤真实号码。
+- `kumo.md` 基线表里的“占位文字”统一为“占位内容”，与其他文档一致。
+- README 与 `tools/check_components.py` 里的 licence 统一为 license。
+
+### 验收
+- 本轮新增内容（2.4.0–2.5.0）从 GitHub 重新克隆后全面复查：22 个预览在 Night / Day、1000 / 390 / 320px 下全部通过（含 axe-core、图标检查和页面检查五项），植入违例的副本全部报出；sprite 与 lucide-static 1.71.0 一致；Kumo 对照页 lint、构建、`kumo/qa/probe.py` 与 `tools/page_check.py`（Night / Day）全部为 0；文档相对链接无断链；Artifact、技能与仓库一致；三个已交付页面没有改动，也不引用线上的 Tight Surface 文件。
+
 ## [2.5.0] · 2026-11-24
 
 ### 新增

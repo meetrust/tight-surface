@@ -8,7 +8,7 @@ Renders every design-system/components/*/preview.html in the Night and Day theme
   - no visible text under 12px (brand mark and nav numbers at 11px are documented exceptions)
   - axe-core: zero violations (wcag2a/aa, wcag21aa, wcag22aa, best-practice), when installed
   - icons: every <symbol> in a preview is copied verbatim from design-system/icons/sprite.svg
-    (Lucide), the Lucide licence line sits above it, and every <use href="#i-..."> points at
+    (Lucide), the Lucide license line sits above it, and every <use href="#i-..."> points at
     a symbol defined in the same preview
   - the page checks that apply to one component (tools/page_check.py): placeholder text,
     generic button copy, visible field labels and placeholder contrast, one primary action
@@ -99,7 +99,7 @@ def icon_problems(comps):
             elif m.group(0) != canon[sid]:
                 out.append(f"icon · {c} · symbol {sid} differs from icons/sprite.svg")
         if defined and "@license lucide-static v1.71.0 - ISC" not in html:
-            out.append(f"icon · {c} · the Lucide licence line is missing above the sprite")
+            out.append(f"icon · {c} · the Lucide license line is missing above the sprite")
         for ref in sorted(set(re.findall(r'href="#(i-[a-z0-9-]+)"', html))):
             if ref not in defined:
                 out.append(f"icon · {c} · #{ref} is used but not defined in the preview")

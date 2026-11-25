@@ -122,7 +122,7 @@ Kumo 的四档控件高度正好落在已有的尺寸 token 上，按下表使�
 | 对比度 | 每段文字对实际叠加后的底色 | 0 处低于 4.5:1 |
 | axe-core | wcag2a、wcag2aa、wcag21aa、wcag22aa、best-practice | 0 违规 |
 | 横向溢出 | 320 / 360 / 760 / 1024 / 1440px | 0 处 |
-| 页面检查 | `tools/page_check.py`（2026-11-24 加入）：占位文字、按钮文案、可见标签、主操作、并排对齐、行长、贴边、空白、章节间距 | 0 FAIL、0 WARN |
+| 页面检查 | `tools/page_check.py`（2026-11-24 加入）：占位内容、按钮文案、可见标签、主操作、并排对齐、行长、贴边、空白、章节间距 | 0 FAIL、0 WARN |
 | 交互 | 键盘焦点、鼠标悬停、触屏轻点、选中态 | 2px `amber` outline 外偏移 3px；按钮上浮 2px、描边 `ice`；轻点不残留上浮；勾选、单选、开关、日期为琥珀实底 |
 
 覆盖的组件：Button、LinkButton、Input、Select、Combobox、Autocomplete、Checkbox、Radio、Switch、Slider、DatePicker、TagInput、Tabs、Breadcrumbs、Pagination、Sidebar、Banner、Badge、Meter、Table、Dialog、DropdownMenu、CommandPalette、Toasty。
