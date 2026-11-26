@@ -9,7 +9,7 @@
 单一琥珀强调、信息优先，<br>用于 AI 应用、开发工具与数据叙事页面。<br>
 *An info-first interface language with Night and Day themes and a single amber accent.*
 
-![版本 v2.5.1](https://img.shields.io/badge/version-v2.5.1-ffb347?style=flat-square&labelColor=111723)
+![版本 v2.5.2](https://img.shields.io/badge/version-v2.5.2-ffb347?style=flat-square&labelColor=111723)
 
 [原则 Principles](#设计原则--principles)&nbsp;· [概览 Overview](#概览--overview)&nbsp;· [目录 Contents](#目录--contents)&nbsp;· [使用 Usage](#使用--usage)&nbsp;· [版本 Versioning](#版本--versioning)
 
@@ -117,6 +117,7 @@ CHANGELOG.md          版本记录 · Release notes
 |---|---|---|
 | [大模型可视化学习指南](https://meetrust.github.io/llm-visual-guide/)<br><sub>LLM Visual Guide</sub> | 手册版式，左侧目录<br><sub>Handbook layout with a side TOC</sub> | [llm-visual-guide](https://github.com/meetrust/llm-visual-guide) |
 | [斯坦福 AI 课程地图](https://meetrust.github.io/stanford-ai-courses/)<br><sub>Stanford AI Course Map</sub> | 地图版式，顶部导航<br><sub>Map layout with a top nav</sub> | [stanford-ai-courses](https://github.com/meetrust/stanford-ai-courses) |
+| [大模型 Attention 架构与技术路线对照](https://meetrust.github.io/attention-architectures/)<br><sub>Attention Architectures</sub> | 白昼主题，顶部导航<br><sub>Day theme with a top nav</sub> | [attention-architectures](https://github.com/meetrust/attention-architectures) |
 
 ## 许可证 · License
 
