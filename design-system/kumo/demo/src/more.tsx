@@ -1,8 +1,9 @@
 import * as React from "react";
 import {
   Autocomplete, Breadcrumbs, Combobox, CommandPalette, DatePicker, Pagination, Sidebar, Slider, TagInput, Toasty,
-  useKumoToastManager,
+  Tooltip, TooltipProvider, useKumoToastManager,
 } from "@cloudflare/kumo";
+import { Copy, Download, RotateCcw } from "lucide-react";
 import { zhCN } from "react-day-picker/locale";
 import { TsButton } from "./kumo-ts/adapters";
 
@@ -72,6 +73,19 @@ export function MoreKumo() {
           <TagInput label="标签" description="回车添加，最多 5 个。" placeholder="添加标签" value={tags} onValueChange={setTags} maxValues={5} />
           <Slider label="温度" defaultValue={40} className="w-full max-w-72" />
           <Pagination page={page} setPage={setPage} perPage={10} totalCount={86} labels={PAGINATION_LABELS} text={() => `第 ${(page - 1) * 10 + 1}–${Math.min(page * 10, 86)} 条，共 86 条`} />
+          {/* 提示分组（motion.md）：只有图标的按钮用 Tooltip 显示名称，整组包一层 TooltipProvider：
+              第一个提示按 Kumo 默认等 600ms，之后 400ms 内移到相邻按钮立即出现 */}
+          <TooltipProvider>
+            <div className="row" role="toolbar" aria-label="会话操作" data-tooltip-group>
+              {[
+                { name: "复制会话", icon: <Copy /> },
+                { name: "导出记录", icon: <Download /> },
+                { name: "重新生成", icon: <RotateCcw /> },
+              ].map((b) => (
+                <Tooltip key={b.name} content={b.name} render={<TsButton shape="square" aria-label={b.name} icon={b.icon} />} />
+              ))}
+            </div>
+          </TooltipProvider>
           <div className="row">
             <Toasty><ToastButton /></Toasty>
             <TsButton onClick={() => setPalette(true)}>命令面板</TsButton>

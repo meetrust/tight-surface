@@ -13,6 +13,10 @@ Renders every design-system/components/*/preview.html in the Night and Day theme
   - the page checks that apply to one component (tools/page_check.py): placeholder text,
     generic button copy, visible field labels and placeholder contrast, one primary action
     per group, and boxes in one row aligned at the top. Links to "#" are fine in previews.
+  - the four motion checks of tools/page_check.py, all counted as failures here: nothing plays
+    under reduced motion (every width), and at 1000px Night with no motion preference text is
+    readable after the entrance, endless animations can be paused, and durations and easings
+    are tokens
 
 Usage:  pip install playwright && python3 -m playwright install chromium
         npm install            # optional, adds axe-core
@@ -149,7 +153,7 @@ def main():
                             if x["ratio"] < x["need"] and not x["transparent"]:
                                 problems.append(f"contrast {x['ratio']}:1 < {x['need']} · {where} · {x['cls'] or '-'} “{x['text']}”")
                         if ground == "void":
-                            for f in page_check.run(pg, PAGE_CHECKS, root="#wrap", links=False):
+                            for f in page_check.run(pg, PAGE_CHECKS, root="#wrap", links=False) + page_check.motion(pg, "reduce", root="#wrap"):
                                 problems.append(f"{f['check']} · {where} · {f['sel']} “{f['text']}” · {f['msg']}")
                             o = pg.evaluate(OVERFLOW_JS)
                             if c not in OVERFLOW_EXEMPT and (o["sw"] > o["W"] or o["out"]):
@@ -164,6 +168,18 @@ def main():
                             if shots and w in (1000, 390):
                                 pg.screenshot(path=os.path.join(SHOTS, f"{tname}-{w}-{c}.png"), full_page=True)
                     pg.close()
+        # motion with no reduced-motion preference: once per preview, Night, 1000px
+        pg = b.new_page(viewport={"width": 1000, "height": 700})
+        pg.emulate_media(reduced_motion="no-preference")
+        for c in comps:
+            html = open(os.path.join(DS, "components", c, "preview.html"), encoding="utf-8").read()
+            pg.set_content(page(None, "void", 1000, html), wait_until="load")
+            pg.wait_for_timeout(page_check.SETTLE_MS)
+            where = f"{c} · night · motion · 1000px"
+            for mode in ("readable", "token", "pause"):
+                for f in page_check.motion(pg, mode, root="#wrap"):
+                    problems.append(f"{f['check']} · {where} · {f['sel']} “{f['text']}” · {f['msg']}")
+        pg.close()
         b.close()
     seen = []
     for x in problems:

@@ -2,6 +2,36 @@
 
 版本号遵循语义化版本。v2.3.0 是迁入 GitHub 时的第一个标签；更早的版本按 Design System artifact 的修改记录补记，没有对应的 Git 标签。
 
+## [2.6.0] · 2026-11-27
+
+### 新增
+- 原则 11“动效说明变化”和新的“动效”一节（`motion.md`）：动效只用来说明入场、位置、数值、状态的变化和“进行中”；八条规则（只说明变化、退出 → 移动 → 进入 → 连线、布局连续、错峰从焦点开始、默认可读、可以暂停、参数取自 token、减弱动效）；九个标准模式；不采用的动效清单；实现方式与验收。规则来自《大模型 Attention 架构与技术路线对照》三张动态图的实现，以及对 Motion、GSAP、Anime.js、Three.js 和 React Bits 的比较。只借思路，代码自写：不引入 GSAP（Webflow 的专有免费许可），不复制 React Bits 的代码（MIT 加 Commons Clause，不允许以移植形式再分发）。
+- 8 个动效 token：`dur-drawer`、`dur-loop`、`enter-shift`、`enter-opacity`、`grow-from`、`stagger`、`stagger-max`、`tick`，写进 `tokens.json` 和 `tokens.css`；脚本从 CSS 读取，不写死数字。
+- 7 个组件，归入新的 Motion 分组：Reflow（筛选重排）、PauseMotion（全页暂停）、NumberRoll（数字滚动）、StatusRing（状态环）、SlideTabs（滑动选中块）、StepFlow（分步方向过渡）、ScrollFade（滚动边缘渐隐）。
+- 原则 9“原生实现优先”加一条例外：数据本身是三维的（点云、空间轨迹、机械臂姿态）可以用 WebGL 画 3D，条件是文字标签放在 HTML 里、不自动旋转、按需渲染、旁边提供二维视图；平面数据不做 3D 效果。细则写进“图表实现”，“数据可视化”里的“不用 3D”改为同样的说法。
+- 图标 `i-pause`（Lucide Pause），用于“暂停动画”。
+- `tools/page_check.py` 加四项动效检查：`motion-reduce`、`motion-readable`、`motion-pause`（含脚本循环：按下暂停后 SVG / HTML 属性不再变化）、`motion-token`（WARN）。`tools/check_components.py` 对每个预览跑同样四项，按 FAIL 计。
+- Kumo：只有图标的按钮用 Tooltip，同一工具栏包一层 `TooltipProvider`（第一个提示 600ms，400ms 内移到相邻按钮立即出现）；对照页加入图标工具栏，覆盖的组件增至 25 个。
+
+### 变更
+- ThinkingTrace、ToolCall 运行中的耗时实时计时，每个 `tick`（100ms）刷新，减弱动效、全页暂停或页面在后台时每秒一次；原来的“每秒最多改一次”作废。
+- TaskRow、ToolCall 的状态图标改用 StatusRing；ToolCall 进行中的琥珀点去掉。TaskRow 的进度条宽度过渡一个 `dur`。
+- BarList 入场 `grow` 从 1.1s 改为一个 `dur`，每行写 `--i` 时按 `stagger` 依次展开。
+- `bundle.css`：所有 `transition` 补上 `var(--ease)`（原来漏写缓动，浏览器用默认的 ease）；`pulse` 周期改用 `dur-loop`；`rise`、`grow` 改读 `enter-*`、`grow-from`。
+- `bundle.css`：`.stat span`、`.datastrip span` 改为只选直接子元素，数字里可以放 NumberRoll；全局加上 `[hidden] { display: none !important; }`，组件的 `display` 不再盖过 `hidden`。
+- Kumo 适配层 v0.3：Tooltip 底色改用 `pop`，与其他浮层一致；Sidebar 展开收起统一为 `dur-drawer` / `ease`（原为 Kumo 内联的 250ms 和另一条曲线）。
+- 设计说明原则 3、5、7，验收清单第 5 组（改名“交互状态与动效”），技能同步加上动效规则、组件和检查。
+- `tools/page_check.py` 的 `field-label` 跳过没有渲染的字段（隐藏的分步、收起的面板）；`blank` 和 `section-gap` 不再把被裁掉的内容（NumberRoll 的数位列）和收起的 `<details>` 里的内容算进去，这两处误报是在动效预览页上发现的。
+
+### 修正
+- `day-theme.md` 的错字“脚冲光晕”改为“脉冲光晕”。
+
+### 验收
+- 29 个预览在 Night / Day、1000 / 390 / 320px 下 0 问题（含 axe-core、图标、页面检查五项和四项动效检查）；在测试页里植入的违例（无暂停按钮的循环、停在透明的文字、0.2s 和默认 ease 的过渡、无视减弱动效的 `el.animate()`、平滑滚动、按下暂停后仍在跑的脚本循环）全部报出。
+- 浏览器实测：Reflow 三段依次播放、快速连点后状态正确；NumberRoll 读屏文字与显示一致；StatusRing 画完弧再画对勾，禁用按钮前焦点移到“重新开始”；SlideTabs 方向键与 320px 换行时底块对齐；StepFlow 前进从右、后退从左，焦点移到新的一步；ScrollFade 两侧渐隐随滚动出现和消失，左侧从固定首列右边开始；PauseMotion 停住循环，暂停时新出现的入场照常播完。Day 主题和 `forced-colors: active` 截图检查通过。
+- Kumo 对照页：`kumo/qa/probe.py`（Night / Day，1440 / 390px）全部为 0；`tools/page_check.py`（Night / Day）0 FAIL、0 WARN；提示分组实测第一个约 0.6 秒、相邻按钮立即出现。
+- 《大模型 Attention 架构与技术路线对照》本地构建跑新的页面检查，13 项全部通过；它的“暂停流动”按钮按下后，脚本对画面的改动从 1.5 秒 858 次降到 0。
+
 ## [2.5.3] · 2026-11-27
 
 ### 变更

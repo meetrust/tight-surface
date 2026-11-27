@@ -1,0 +1,54 @@
+<!-- @dsCard group="Motion" height=230 subtitle="滑动选中块：选中底块从旧位置滑到新位置，方向键切换" -->
+<div style="padding:24px;max-width:680px;display:grid;gap:12px" data-slide-tabs>
+  <div class="seg" role="tablist" aria-label="注意力机制">
+    <span class="seg-thumb" aria-hidden="true"></span>
+    <button role="tab" type="button" id="stb-full" aria-selected="true" aria-controls="stb-panel">全注意力</button>
+    <button role="tab" type="button" id="stb-swa" aria-selected="false" aria-controls="stb-panel" tabindex="-1">滑动窗口</button>
+    <button role="tab" type="button" id="stb-sparse" aria-selected="false" aria-controls="stb-panel" tabindex="-1">稀疏注意力</button>
+    <button role="tab" type="button" id="stb-linear" aria-selected="false" aria-controls="stb-panel" tabindex="-1">线性注意力</button>
+  </div>
+  <div id="stb-panel" role="tabpanel" aria-labelledby="stb-full" tabindex="0" style="padding:12px 16px;border:1px solid var(--rule);border-radius:12px;background:var(--panel);font-size:14px;line-height:1.7;color:var(--ink-2)">
+    <p style="margin:0">每个位置都看全部历史位置，计算量随长度平方增长。</p>
+  </div>
+</div>
+<script>
+(() => {
+  // 滑动选中块：读取选中项的位置和尺寸写进 --x / --y / --w / --h，底块按 dur / ease 过渡；尺寸变化时不播动画，直接对齐
+  const root = document.querySelector("[data-slide-tabs]");
+  const seg = root.querySelector(".seg"), tabs = [...seg.querySelectorAll('[role="tab"]')];
+  const panel = root.querySelector('[role="tabpanel"]');
+  const notes = {
+    "stb-full": "每个位置都看全部历史位置，计算量随长度平方增长。",
+    "stb-swa": "每个位置只看最近的一段窗口，计算量随长度线性增长。",
+    "stb-sparse": "每个位置只看按规则挑出的少数位置，远距离依赖靠跨层传递。",
+    "stb-linear": "把历史压缩成固定大小的状态，每步读写一次，内存不随长度增长。",
+  };
+  const place = (animate) => {
+    const t = tabs.find((x) => x.getAttribute("aria-selected") === "true");
+    if (!animate) seg.removeAttribute("data-ready");
+    seg.style.setProperty("--x", t.offsetLeft + "px");
+    seg.style.setProperty("--y", t.offsetTop + "px");
+    seg.style.setProperty("--w", t.offsetWidth + "px");
+    seg.style.setProperty("--h", t.offsetHeight + "px");
+    if (!animate) { void seg.offsetWidth; seg.setAttribute("data-ready", ""); }
+  };
+  const select = (t, focus) => {
+    tabs.forEach((x) => { const on = x === t; x.setAttribute("aria-selected", String(on)); x.tabIndex = on ? 0 : -1; });
+    panel.setAttribute("aria-labelledby", t.id);
+    panel.firstElementChild.textContent = notes[t.id];
+    place(true);
+    if (focus) t.focus();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(t));
+    t.addEventListener("keydown", (e) => {
+      const k = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      if (k === undefined) return;
+      e.preventDefault();
+      select(tabs[(k + tabs.length) % tabs.length], true);
+    });
+  });
+  new ResizeObserver(() => place(false)).observe(seg);
+  place(false);
+})();
+</script>

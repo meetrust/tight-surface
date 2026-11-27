@@ -1,0 +1,84 @@
+<!-- @dsCard group="Motion" height=330 subtitle="筛选重排：退出 → 移动 → 从触发的按钮开始错峰进入" -->
+<div style="padding:24px;max-width:680px" data-reflow>
+  <div class="reflow">
+    <div class="reflow-bar">
+      <button class="fbtn" type="button" aria-pressed="true" data-kind="all">全部</button>
+      <button class="fbtn" type="button" aria-pressed="false" data-kind="read">检索</button>
+      <button class="fbtn" type="button" aria-pressed="false" data-kind="code">编码</button>
+      <button class="fbtn" type="button" aria-pressed="false" data-kind="write">写入</button>
+      <p class="reflow-sum" role="status">显示 8 / 8 个工具</p>
+    </div>
+    <ul class="reflow-grid" aria-label="Agent 工具">
+      <li data-kind="read"><span class="nm">read_file</span><span class="tk" style="--c: var(--l1)">检索</span></li>
+      <li data-kind="code"><span class="nm">run_python</span><span class="tk" style="--c: var(--l6)">编码</span></li>
+      <li data-kind="read"><span class="nm">web_search</span><span class="tk" style="--c: var(--l1)">检索</span></li>
+      <li data-kind="write"><span class="nm">write_file</span><span class="tk" style="--c: var(--l4)">写入</span></li>
+      <li data-kind="code"><span class="nm">run_tests</span><span class="tk" style="--c: var(--l6)">编码</span></li>
+      <li data-kind="read"><span class="nm">list_dir</span><span class="tk" style="--c: var(--l1)">检索</span></li>
+      <li data-kind="write"><span class="nm">send_message</span><span class="tk" style="--c: var(--l4)">写入</span></li>
+      <li data-kind="code"><span class="nm">format_code</span><span class="tk" style="--c: var(--l6)">编码</span></li>
+    </ul>
+  </div>
+</div>
+<script>
+(() => {
+  // 筛选重排：退出 → 移动（FLIP）→ 从触发的按钮开始按距离错峰进入。参数全部取自 token。
+  const root = document.querySelector("[data-reflow]");
+  const grid = root.querySelector(".reflow-grid"), sum = root.querySelector(".reflow-sum");
+  const buttons = [...root.querySelectorAll(".fbtn")], items = [...grid.children];
+  const css = getComputedStyle(document.documentElement);
+  const ms = (n) => { const v = css.getPropertyValue(n).trim(); return v.endsWith("ms") ? parseFloat(v) : parseFloat(v) * 1000; };
+  const DUR = ms("--dur"), STAGGER = ms("--stagger"), STAGGER_MAX = ms("--stagger-max");
+  const EASE = css.getPropertyValue("--ease").trim();
+  const SHIFT = parseFloat(css.getPropertyValue("--enter-shift")), FROM = parseFloat(css.getPropertyValue("--enter-opacity"));
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const wait = (t) => new Promise((r) => setTimeout(r, t));
+  let run = 0;
+
+  const count = () => { sum.textContent = `显示 ${items.filter((li) => !li.hidden).length} / ${items.length} 个工具`; };
+
+  async function show(kind, origin) {
+    const id = ++run;
+    items.forEach((li) => { li.getAnimations().forEach((a) => a.cancel()); li.style.visibility = ""; });   // 打断：从当前布局重新开始
+    const keep = (li) => kind === "all" || li.dataset.kind === kind;
+    const leaving = items.filter((li) => !li.hidden && !keep(li));
+    const staying = items.filter((li) => !li.hidden && keep(li));
+    const entering = items.filter((li) => li.hidden && keep(li));
+    if (reduce.matches) { items.forEach((li) => { li.hidden = !keep(li); }); count(); return; }
+
+    // 1. 退出
+    if (leaving.length) {
+      await Promise.all(leaving.map((li) => li.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR, easing: EASE, fill: "forwards" }).finished.catch(() => {})));
+      if (id !== run) return;
+    }
+    // 2. 移动：记下旧位置 → 换布局 → 反向位移 → 过渡到零
+    const before = new Map(staying.map((li) => [li, li.getBoundingClientRect()]));
+    leaving.forEach((li) => { li.hidden = true; li.getAnimations().forEach((a) => a.cancel()); });
+    entering.forEach((li) => { li.hidden = false; li.style.visibility = "hidden"; });
+    count();
+    let moved = false;
+    staying.forEach((li) => {
+      const a = before.get(li), b = li.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top;
+      if (Math.abs(dx) + Math.abs(dy) < 1) return;
+      moved = true;
+      li.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: DUR, easing: EASE });
+    });
+    if (moved) { await wait(DUR); if (id !== run) return; }
+    // 3. 进入：离触发按钮最近的先进入，间隔 stagger，总延迟不超过 stagger-max
+    const o = origin.getBoundingClientRect(), ox = o.left + o.width / 2, oy = o.top + o.height / 2;
+    const dist = (li) => { const r = li.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - ox, r.top + r.height / 2 - oy); };
+    entering.sort((p, q) => dist(p) - dist(q));
+    const step = entering.length > 1 ? Math.min(STAGGER, STAGGER_MAX / (entering.length - 1)) : 0;
+    entering.forEach((li, i) => {
+      li.style.visibility = "";
+      li.animate([{ opacity: FROM, transform: `translateY(${SHIFT}px)` }, { opacity: 1, transform: "none" }], { duration: DUR, easing: EASE, delay: i * step, fill: "backwards" });
+    });
+  }
+
+  buttons.forEach((b) => b.addEventListener("click", () => {
+    if (b.getAttribute("aria-pressed") === "true") return;
+    buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    show(b.dataset.kind, b);
+  }));
+})();
+</script>

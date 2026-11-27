@@ -1,5 +1,5 @@
 <!-- @dsCard group="Agent" height=320 subtitle="思考轨迹：进行中展开 · 完成后收起" -->
-<div style="padding:24px;display:grid;gap:12px;max-width:680px">
+<div style="padding:24px;display:grid;gap:12px;max-width:680px" data-trace-demo>
   <!-- @license lucide-static v1.71.0 - ISC -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
@@ -22,3 +22,27 @@
     </ol>
   </details>
 </div>
+<script>
+(() => {
+  // 实时计时：运行中的总耗时和当前一步的耗时一起走，步骤耗时之和始终等于总耗时
+  const css = getComputedStyle(document.documentElement);
+  const ms = (n) => { const v = css.getPropertyValue(n).trim(); return v.endsWith("ms") ? parseFloat(v) : parseFloat(v) * 1000; };
+  const TICK = ms("--tick");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const slow = () => reduce.matches || document.hidden || document.documentElement.dataset.motion === "paused";
+  const trace = document.querySelector('[data-trace-demo] .trace[data-state="running"]');
+  const total = trace.querySelector(".trace-time"), step = trace.querySelector(".trace-steps li:last-child .t");
+  const total0 = parseFloat(total.textContent), step0 = parseFloat(step.textContent), start = performance.now();
+  let shown = -Infinity;
+  const loop = () => {
+    const now = performance.now(), e = (now - start) / 1000;
+    if (!slow() || now - shown >= 1000) {
+      shown = now;
+      total.textContent = (total0 + e).toFixed(1) + " s";
+      step.textContent = (step0 + e).toFixed(1) + " s";
+    }
+    setTimeout(loop, TICK);
+  };
+  loop();
+})();
+</script>

@@ -27,6 +27,21 @@ design rules (Apache-2.0). No code is taken from either.
   section-gap   (WARN) the space above a section heading differs from the page's median by
                 more than 25%
 
+  Motion (rules in design-system/motion.md):
+  motion-reduce    with prefers-reduced-motion: reduce, an animation or transition still playing
+                   after load, or smooth scrolling still on
+  motion-readable  after load and the entrance choreography (1.5 s), visible text whose opacity,
+                   ancestors included, is under 0.2: content hidden until a script or a scroll
+                   reveals it (decorative text inside aria-hidden is exempt)
+  motion-pause     an endless animation with no page-wide pause button ([data-motion-pause], or a
+                   button named 暂停 / Pause), or one that still plays after the button is pressed;
+                   a script that keeps moving SVG or HTML (rAF, timers) must also stop. Running-state
+                   indicators (.trace-dot, .ring-arc, [data-motion-status]) need no button of their
+                   own but must stop when it is pressed. With no button, a script that keeps moving
+                   things is a WARN: confirm by hand. Canvas and WebGL loops are invisible here.
+  motion-token     (WARN) a transition or animation whose duration is not dur / dur-drawer /
+                   dur-loop, or whose easing is not ease (or linear for loops); CSS and el.animate()
+
 Usage:  pip install playwright && python3 -m playwright install chromium
         python3 tools/page_check.py <page.html | URL> [--widths 1440,390,320] [--theme day] [--json]
 Exit 1 when any check FAILs, 0 otherwise.
@@ -37,6 +52,8 @@ from playwright.sync_api import sync_playwright
 WIDTHS = [1440, 390, 320]
 CHECKS = ["placeholder", "button-copy", "field-label", "primary", "row-align",
           "line-length", "edge-gap", "blank", "section-gap"]
+MOTION_CHECKS = ["motion-reduce", "motion-readable", "motion-pause", "motion-token"]
+SETTLE_MS = 1500            # entrance choreography: stagger-max + a few dur, with room to spare
 
 # One function, run in the page. opts: {checks: [...], root: CSS selector, links: bool}
 PAGE_JS = r"""
@@ -71,6 +88,8 @@ PAGE_JS = r"""
     }
     return false;
   };
+  // content of a closed <details> is not painted, but Chromium may still report boxes for it
+  const folded = (el) => { for (let e = el; e && e.parentElement; e = e.parentElement) if (e.parentElement.tagName === 'DETAILS' && !e.parentElement.open && e.tagName !== 'SUMMARY') return true; return false; };
   const shown = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !srOnly(el); };
   // colour
   const srgb = (s) => {
@@ -97,7 +116,7 @@ PAGE_JS = r"""
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
     if (!n.textContent.trim()) continue;
-    const el = n.parentElement; if (!el || el.closest(SKIP) || srOnly(el)) continue;
+    const el = n.parentElement; if (!el || el.closest(SKIP) || srOnly(el) || folded(el)) continue;
     const rg = document.createRange(); rg.selectNodeContents(n);
     for (const r of rg.getClientRects()) if (r.width > 0 && r.height > 0) lines.push({ el, r });
   }
@@ -145,6 +164,7 @@ PAGE_JS = r"""
     for (const f of root.querySelectorAll('input, select, textarea, [role="textbox"], [role="combobox"], [role="searchbox"], [role="spinbutton"]')) {
       if (f.matches('input[type="hidden"], input[type="submit"], input[type="button"], input[type="reset"], input[type="image"]')) continue;
       if (f.closest('[aria-hidden="true"], [inert]')) continue;
+      if (!f.getClientRects().length) continue;   // not rendered (a hidden step, a collapsed panel): nobody sees it
       // Kumo Pagination's page-number box is part of the pager, named by labels.pageNumber (see kumo.md)
       if (f.closest('[data-slot="pagination-controls"]') && f.getAttribute('aria-label')) continue;
       const own = f.getBoundingClientRect();
@@ -241,16 +261,29 @@ PAGE_JS = r"""
 
   // ---- content intervals (blank, section-gap)
   let items = null;
+  // the part of a box that is actually painted, vertically: clipped by ancestors with overflow other than
+  // visible or a clip-path inset (NumberRoll's digit columns, collapsed panels), or null when nothing shows
+  const clipY = (from, r) => {
+    let top = r.top, bottom = r.bottom;
+    for (let e = from; e && e !== document.body && e !== document.documentElement; e = e.parentElement) {
+      const c = CS(e);
+      if (c.overflowX !== 'visible' || c.overflowY !== 'visible' || /^inset\(/.test(c.clipPath || '')) {
+        const b = e.getBoundingClientRect(); top = Math.max(top, b.top); bottom = Math.min(bottom, b.bottom);
+        if (bottom - top < 1) return null;
+      }
+    }
+    return { top: top + SY, bottom: bottom + SY };
+  };
   const contentItems = () => {
     if (items) return items;
-    items = lines.filter(({ el }) => CS(el).position !== 'fixed').map(({ r }) => ({ top: r.top + SY, bottom: r.bottom + SY }));
+    items = lines.filter(({ el }) => CS(el).position !== 'fixed').map(({ el, r }) => clipY(el, r)).filter(Boolean);
     for (const el of root.querySelectorAll('img, svg, canvas, video, iframe, picture, input, select, textarea, button, hr, *')) {
       const c = CS(el); if (c.position === 'fixed' || el.closest(SKIP)) continue;
       const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 1) continue;
       const media = el.matches('img, svg, canvas, video, iframe, picture, input, select, textarea, button, hr');
       if (!media && !(boxed(el) && r.width < VW * 0.95)) continue;
-      if (srOnly(el)) continue;
-      items.push({ top: r.top + SY, bottom: r.bottom + SY });
+      if (srOnly(el) || folded(el)) continue;
+      const v = clipY(el.parentElement, r); if (v) items.push(v);
     }
     items.sort((a, b) => a.top - b.top);
     return items;
@@ -287,6 +320,153 @@ PAGE_JS = r"""
 """
 
 
+# Motion checks. One function, run in the page. opts: {mode, root}
+MOTION_JS = r"""
+(opts) => {
+  const root = document.querySelector(opts.root || 'body') || document.body;
+  const CS = (e, p) => getComputedStyle(e, p);
+  const selOf = (el) => {
+    if (!el || el.nodeType !== 1) return '';
+    const parts = [];
+    for (let e = el; e && e !== document.body && parts.length < 4; e = e.parentElement) {
+      let s = e.tagName.toLowerCase();
+      if (e.id) { parts.unshift(s + '#' + e.id); break; }
+      const c = (typeof e.className === 'string' ? e.className : (e.getAttribute('class') || '')).trim().split(/\s+/).filter(Boolean).slice(0, 2);
+      if (c.length) s += '.' + c.join('.');
+      parts.unshift(s);
+    }
+    return parts.join(' > ');
+  };
+  const textOf = (el) => (el && el.innerText ? el.innerText : el && el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+  const inRoot = (el) => el && el.nodeType === 1 && (root === document.body || root.contains(el));
+  const STATUS = '.trace-dot, .ring-arc, [data-motion-status], [data-motion-status] *';
+  const target = (a) => a.effect && a.effect.target;
+  const loops = () => document.getAnimations().filter((a) => {
+    const t = a.effect && a.effect.getComputedTiming ? a.effect.getComputedTiming() : null;
+    return t && t.iterations === Infinity && a.playState === 'running' && inRoot(target(a));
+  });
+  const nameOf = (a) => a.animationName || a.transitionProperty || (a.id ? a.id : 'el.animate()');
+  const out = [];
+  const add = (check, sev, el, msg) => out.push({ check, sev, sel: selOf(el), text: textOf(el), msg });
+
+  if (opts.mode === 'reduce') {
+    for (const a of document.getAnimations()) {
+      if (a.playState !== 'running' || !inRoot(target(a))) continue;
+      add('motion-reduce', 'FAIL', target(a), `减弱动效下仍在播放：${nameOf(a)}`);
+    }
+    for (const e of [document.documentElement, document.body])
+      if (CS(e).scrollBehavior === 'smooth') out.push({ check: 'motion-reduce', sev: 'FAIL', sel: e.tagName.toLowerCase(), text: '', msg: '减弱动效下仍是平滑滚动（scroll-behavior: smooth）' });
+  }
+
+  if (opts.mode === 'readable') {
+    for (const el of root.querySelectorAll('*')) {
+      if (el.closest('script, style, noscript, template, [aria-hidden="true"], .sr-only')) continue;
+      if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+      const r = el.getBoundingClientRect(), c = CS(el);
+      if (!r.width || !r.height || c.visibility === 'hidden') continue;
+      let op = 1;
+      for (let e = el; e && op >= 0.2; e = e.parentElement) op *= parseFloat(CS(e).opacity);
+      if (op < 0.2) add('motion-readable', 'FAIL', el, `加载 ${opts.settle / 1000} 秒后不透明度 ${op.toFixed(2)}，文字看不清：页面的初始状态应当就是最终状态`);
+    }
+  }
+
+  if (opts.mode === 'loops') {
+    return loops().map((a) => ({ sel: selOf(target(a)), status: !!(target(a).closest && target(a).closest(STATUS)), name: nameOf(a) }));
+  }
+
+  if (opts.mode === 'token') {
+    const css = CS(document.documentElement);
+    const sec = (v) => { v = String(v).trim(); return v.endsWith('ms') ? parseFloat(v) / 1000 : parseFloat(v); };
+    const okDur = ['--dur', '--dur-drawer', '--dur-loop'].map((n) => sec(css.getPropertyValue(n) || '0')).filter((x) => x > 0);
+    if (!okDur.length) okDur.push(0.28, 0.35, 1.6);
+    const curve = (v) => { const m = String(v).match(/cubic-bezier\(([^)]+)\)/); return m ? m[1].split(',').map((x) => +parseFloat(x).toFixed(3)).join(',') : String(v).trim(); };
+    const ease = curve(css.getPropertyValue('--ease') || 'cubic-bezier(.2, .7, .2, 1)');
+    const okEase = (v) => { const c = curve(v); return c === ease || c === 'linear'; };
+    const fname = (f) => (f === 'ease' ? 'CSS 默认的 ease（transition 里漏写了缓动）' : f);
+    const okD = (d) => d === 0 || okDur.some((x) => Math.abs(x - d) < 0.005);
+    const seen = new Set();
+    const flag = (el, what) => { const k = selOf(el) + what; if (seen.has(k)) return; seen.add(k); add('motion-token', 'WARN', el, what); };
+    const split = (v) => String(v).split(/,(?![^(]*\))/).map((x) => x.trim());
+    const look = (el, pseudo) => {
+      const c = CS(el, pseudo), tag = pseudo ? ' ' + pseudo : '';
+      const td = split(c.transitionDuration).map(sec), tf = split(c.transitionTimingFunction), tp = split(c.transitionProperty);
+      td.forEach((d, i) => {
+        if (!d || tp[i % tp.length] === 'none') return;
+        if (!okD(d)) flag(el, `过渡时长 ${d}s 不是 token（${tp[i % tp.length]}${tag}）`);
+        const f = tf[i % tf.length]; if (!okEase(f)) flag(el, `过渡缓动 ${fname(f)}，不是 token ease（${tp[i % tp.length]}${tag}）`);
+      });
+      if (c.animationName && c.animationName !== 'none') {
+        const ad = split(c.animationDuration).map(sec), af = split(c.animationTimingFunction), an = split(c.animationName);
+        an.forEach((n, i) => {
+          const d = ad[i % ad.length]; if (d && !okD(d)) flag(el, `动画时长 ${d}s 不是 token（${n}${tag}）`);
+          const f = af[i % af.length]; if (!okEase(f)) flag(el, `动画缓动 ${fname(f)}，不是 token ease 或 linear（${n}${tag}）`);
+        });
+      }
+    };
+    for (const el of root.querySelectorAll('*')) { look(el, null); look(el, '::before'); look(el, '::after'); }
+    for (const a of document.getAnimations()) {
+      if (a.animationName !== undefined || a.transitionProperty !== undefined || !inRoot(target(a))) continue;   // CSS ones are covered above
+      const t = a.effect.getTiming(), d = (t.duration || 0) / 1000;
+      if (d && !okD(d)) flag(target(a), `el.animate() 时长 ${d}s 不是 token`);
+      if (!okEase(t.easing)) flag(target(a), `el.animate() 缓动 ${fname(t.easing)}，不是 token ease`);
+    }
+  }
+  return out;
+}
+"""
+
+# counts attribute changes (style, transform, SVG geometry) for a while: a script that keeps moving things
+MUTATION_JS = r"""
+(ms) => new Promise((done) => {
+  let n = 0;
+  const mo = new MutationObserver((list) => { for (const m of list) if (m.type === 'attributes') n++; });
+  mo.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['style', 'transform', 'd', 'x', 'y', 'cx', 'cy', 'x1', 'x2', 'y1', 'y2', 'points', 'stroke-dashoffset', 'opacity'] });
+  setTimeout(() => { mo.disconnect(); done(n); }, ms);
+})
+"""
+
+PAUSE_JS = r"""
+() => {
+  const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
+  let b = [...document.querySelectorAll('[data-motion-pause]')].find(vis);
+  if (!b) b = [...document.querySelectorAll('button, [role="button"]')].find((e) => vis(e) && /暂停|pause/i.test((e.getAttribute('aria-label') || '') + ' ' + e.textContent));
+  if (!b) return false;
+  b.setAttribute('data-page-check-pause', '');
+  return true;
+}
+"""
+
+
+def motion(page, mode, root="body", settle=SETTLE_MS):
+    """Motion checks in an already loaded page. mode: reduce | readable | token | pause.
+    reduce runs under prefers-reduced-motion: reduce; the others under no-preference."""
+    if mode != "pause":
+        return page.evaluate(MOTION_JS, {"mode": mode, "root": root, "settle": settle})
+    out = []
+    loops = page.evaluate(MOTION_JS, {"mode": "loops", "root": root})
+    moving = page.evaluate(MUTATION_JS, 1500)
+    if not loops and moving <= 4:
+        return out
+    if not page.evaluate(PAUSE_JS):
+        for x in [l for l in loops if not l["status"]][:3]:
+            out.append({"check": "motion-pause", "sev": "FAIL", "sel": x["sel"], "text": "", "msg": f"无限循环的动画 {x['name']} 没有全页暂停按钮（WCAG 2.2.2）"})
+        if moving > 4 and not any(not l["status"] for l in loops):
+            out.append({"check": "motion-pause", "sev": "WARN", "sel": "body", "text": "", "msg": f"1.5 秒内脚本改动了 {moving} 次画面属性，又没有暂停按钮：人工确认它会自己停下，否则加 PauseMotion"})
+        return out
+    btn = page.locator("[data-page-check-pause]").first
+    btn.click()
+    page.wait_for_timeout(300)
+    still = page.evaluate(MOTION_JS, {"mode": "loops", "root": root})
+    for x in still[:3]:
+        out.append({"check": "motion-pause", "sev": "FAIL", "sel": x["sel"], "text": "", "msg": f"按下暂停后 {x['name']} 仍在播放"})
+    after = page.evaluate(MUTATION_JS, 1500)
+    if after > 4:
+        out.append({"check": "motion-pause", "sev": "FAIL", "sel": "body", "text": "", "msg": f"按下暂停后，脚本在 1.5 秒内仍改动了 {after} 次画面属性（暂停前 {moving} 次）"})
+    btn.click()                      # restore
+    page.wait_for_timeout(100)
+    return out
+
+
 def run(page, checks, root="body", links=True):
     """Run the checks in an already loaded Playwright page; returns a list of findings."""
     return page.evaluate(PAGE_JS, {"checks": checks, "root": root, "links": links})
@@ -320,7 +500,21 @@ def main():
                 pg.evaluate("t => document.documentElement.setAttribute('data-theme', t)", theme)
             pg.evaluate("() => document.fonts && document.fonts.ready")
             pg.wait_for_timeout(400)
-            for f in run(pg, CHECKS):
+            for f in run(pg, CHECKS) + motion(pg, "reduce"):
+                f["width"] = w; report.append(f)
+            pg.close()
+            # motion as most people see it: no reduced-motion preference
+            pg = b.new_page(viewport={"width": w, "height": 900 if w > 760 else 844})
+            pg.emulate_media(reduced_motion="no-preference")
+            pg.goto(url, wait_until="load")
+            if theme:
+                pg.evaluate("t => document.documentElement.setAttribute('data-theme', t)", theme)
+            pg.evaluate("() => document.fonts && document.fonts.ready")
+            pg.wait_for_timeout(SETTLE_MS)
+            found = motion(pg, "readable")
+            if w == widths[0]:
+                found += motion(pg, "token") + motion(pg, "pause")
+            for f in found:
                 f["width"] = w; report.append(f)
             pg.close()
         b.close()
@@ -338,7 +532,7 @@ def main():
             n = sum(f["check"] == c and f["sev"] == "FAIL" for f in unique)
             w = sum(f["check"] == c and f["sev"] == "WARN" for f in unique)
             return f"{c} " + (f"{n} FAIL" if n else f"{w} WARN" if w else "PASS")
-        print(" · ".join(mark(c) for c in CHECKS))
+        print(" · ".join(mark(c) for c in CHECKS + MOTION_CHECKS))
         print(f"{target} · {'/'.join(map(str, widths))}px · {fails} FAIL · {warns} WARN")
     sys.exit(1 if any(f["sev"] == "FAIL" for f in unique) else 0)
 

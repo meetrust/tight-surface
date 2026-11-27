@@ -1,0 +1,48 @@
+<!-- @dsCard group="Motion" height=330 subtitle="状态环：排队 → 进度弧 → 完成画出对勾 / 失败画出叉" -->
+<div style="padding:24px;max-width:680px;display:grid;gap:16px" data-ring-demo>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+    <span class="st no"><svg class="ring" viewBox="0 0 24 24" data-state="queued" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg>排队</span>
+    <span class="st v"><svg class="ring" viewBox="0 0 24 24" data-state="running" style="--p: 68" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg>进行中 68%</span>
+    <span class="st v"><svg class="ring" viewBox="0 0 24 24" data-state="running" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg>进行中</span>
+    <span class="st ok"><svg class="ring" viewBox="0 0 24 24" data-state="done" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg>已完成</span>
+    <span class="st bad"><svg class="ring" viewBox="0 0 24 24" data-state="failed" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg>失败</span>
+  </div>
+  <ol class="tasks">
+    <li class="task" data-state="queued">
+      <span class="task-no">01</span>
+      <div class="task-main"><p class="task-title">生成月度用量报告</p><p class="task-note">汇总 12 个模型的调用记录</p>
+        <div class="task-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="生成月度用量报告 0%" hidden><span style="--v: 0"></span></div></div>
+      <div class="task-side"><span class="st no"><svg class="ring" viewBox="0 0 24 24" data-state="queued" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg><span>排队</span></span></div>
+    </li>
+  </ol>
+  <p class="sr-only" role="status"></p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="act" type="button" data-advance>推进任务</button><button class="act ghost" type="button" data-reset>重新开始</button></div>
+</div>
+<script>
+(() => {
+  // 状态环：只改 data-state 和 --p，过渡全部由 CSS 完成（进度弧 dur；完成或失败时，记号在弧画满之后再画出）
+  const root = document.querySelector("[data-ring-demo]");
+  const task = root.querySelector(".task"), chip = task.querySelector(".task-side .st"), ring = chip.querySelector(".ring");
+  const text = chip.querySelector("span"), bar = task.querySelector(".task-bar"), fill = bar.querySelector("span");
+  const live = root.querySelector("[role=status]"), next = root.querySelector("[data-advance]");
+  const steps = [["queued"], ["running", 35], ["running", 70], ["done", 100]];
+  let k = 0;
+  const render = () => {
+    const [state, p] = steps[k];
+    task.dataset.state = state;
+    ring.dataset.state = state;
+    if (state === "running") ring.style.setProperty("--p", p); else ring.style.removeProperty("--p");
+    chip.className = "st " + { queued: "no", running: "v", done: "ok" }[state];
+    text.textContent = { queued: "排队", running: `进行中 ${p}%`, done: "已完成" }[state];
+    bar.hidden = state !== "running";
+    fill.style.setProperty("--v", p || 0);
+    bar.setAttribute("aria-valuenow", p || 0);
+    bar.setAttribute("aria-label", `生成月度用量报告 ${p || 0}%`);
+    next.disabled = state === "done";
+    if (state === "done" && document.activeElement === next) root.querySelector("[data-reset]").focus();   // 按钮禁用前把焦点交给“重新开始”，焦点不丢
+    live.textContent = k ? "生成月度用量报告：" + text.textContent : "";
+  };
+  next.addEventListener("click", () => { if (k < steps.length - 1) { k++; render(); } });
+  root.querySelector("[data-reset]").addEventListener("click", () => { k = 0; render(); });
+})();
+</script>

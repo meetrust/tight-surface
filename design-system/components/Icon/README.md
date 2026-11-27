@@ -10,14 +10,15 @@ sprite 的 id 一律是 `i-` 加 Lucide 图标名，与 lucide-react 组件一�
 ## 清单
 | id | lucide-react | 用途 |
 |---|---|---|
-| `i-play` | `Play` | 视频 |
+| `i-play` | `Play` | 视频；暂停后的“继续动画” |
+| `i-pause` | `Pause` | 暂停动画（PauseMotion） |
 | `i-code` | `Code` | 代码仓库 |
 | `i-arrow-up-right` | `ArrowUpRight` | 外链 |
 | `i-arrow-up` | `ArrowUp` | 回到顶部 |
 | `i-menu` | `Menu` | 目录按钮 |
 | `i-chevron-right` | `ChevronRight` | 折叠与展开（展开时旋转 90°） |
-| `i-check` | `Check` | 建议、成功 |
-| `i-x` | `X` | 误区、失败 |
+| `i-check` | `Check` | 建议、成功（任务和工具调用的状态改用 StatusRing） |
+| `i-x` | `X` | 误区、失败（任务和工具调用的状态改用 StatusRing） |
 | `i-download` | `Download` | 导出、下载 |
 | `i-move-right` | —（源自 `MoveRight`） | 连线图例：必经前置。viewBox 裁成 24×16，React 里也用 sprite |
 | `i-move-right-dashed` | — | 连线图例：推荐或可选。唯一的自定义变体，在 `move-right` 的基础上把杆改成虚线，React 里也用 sprite |

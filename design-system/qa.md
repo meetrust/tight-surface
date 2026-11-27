@@ -48,12 +48,17 @@
 - 带 `aria-label` 的链接和按钮，名称里原样包含可见文字（WCAG 2.5.3）；可见文字由两个相邻元素拼成时（代号 + 名称），中间留一个空格。
 - 图表库：页面源码里搜 `mermaid`、`chart.js`、`echarts`，结果为 0；如果有例外，页面注释或 README 里必须写明原因，且该图的渲染数量等于源码块数量。
 
-## 5. 交互状态
+## 5. 交互状态与动效
 - 图形用桌面悬停、键盘 Tab、触屏轻点（Playwright `hasTouch` + `touchscreen.tap`）三种方式各走一遍。
 - 状态类名的变化：一次轻点最多变化一次，操作结束后不残留淡出状态。可切换的固定按钮（图例、连线列表）例外：第一次轻点 `aria-pressed="true"`，再轻点一次变回 `false` 且不再淡出。
 - 会横向滚动的表格、代码块和图表容器能用 Tab 聚焦、用方向键滚动（`tabindex="0"`、`role="region"`、全页唯一的 `aria-label`）。
 - 复制按钮在异步剪贴板被拦截时仍显示“已复制”（退回 `execCommand("copy")`）。
 - 聚焦状态下，相关标签的有效不透明度 = 1；`foreignObject` 内带 opacity、transform、filter、transition 的元素数量 = 0。
+- 减弱动效（page_check：motion-reduce）：`prefers-reduced-motion: reduce` 下，加载后没有还在播放的动画、过渡和平滑滚动。
+- 默认可读（page_check：motion-readable）：不开减弱动效，加载 1.5 秒后没有不透明度低于 0.2 的文字；数字不从 0 数起。
+- 可以暂停（page_check：motion-pause）：持续超过 5 秒的动效有一个全页暂停按钮（PauseMotion），按下后 CSS 循环和脚本循环都停住；画在画布上的循环人工确认，切到后台也要停。
+- 动效参数（page_check：motion-token，WARN）：时长只有 `dur`、`dur-drawer`、`dur-loop`，缓动只有 `ease`（匀速循环用 linear），每条 WARN 都要处理掉。
+- 编排（人工）：以正常速度把筛选、排序、换步各走一遍：顺序是退出 → 移动 → 进入 → 连线，没有瞬移，没有两组元素叠在同一格；连续快速点击时动画不叠加。
 
 ## 6. 人工检查
 - 1440 和 390 各截一张全页图，按“名称 → 颜色 → 结构”的顺序扫一遍。

@@ -1,0 +1,34 @@
+<!-- @dsCard group="Motion" height=300 subtitle="滚动边缘渐隐：还有内容的一侧显示渐隐，滚到头消失" -->
+<div style="padding:24px;max-width:560px" data-scroll-fade-demo>
+  <div class="scroll-fade">
+    <div class="tbl sticky-first" tabindex="0" role="region" aria-label="各模型本月用量（可横向滚动）">
+      <table style="min-width:720px">
+        <thead><tr><th>模型</th><th>调用</th><th>输入 Token</th><th>输出 Token</th><th>缓存命中</th><th>平均延迟</th><th>费用</th></tr></thead>
+        <tbody>
+          <tr><th scope="row" style="--c: var(--l1)">claude-opus-5-5</th><td>1,204</td><td>612,400</td><td>88,120</td><td>58%</td><td>6.2 s</td><td>$214.60</td></tr>
+          <tr><th scope="row" style="--c: var(--l2)">claude-sonnet-5-5</th><td>1,688</td><td>401,920</td><td>96,310</td><td>66%</td><td>3.1 s</td><td>$71.40</td></tr>
+          <tr><th scope="row" style="--c: var(--l6)">claude-haiku-5-5</th><td>520</td><td>63,800</td><td>21,990</td><td>71%</td><td>1.2 s</td><td>$4.90</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  // 滚动边缘渐隐：按滚动位置在外层写 data-more="start end"；左侧渐隐从固定首列的右边缘开始
+  for (const wrap of document.querySelectorAll("[data-scroll-fade-demo] .scroll-fade")) {
+    const box = wrap.firstElementChild;
+    const update = () => {
+      const max = box.scrollWidth - box.clientWidth, more = [];
+      if (box.scrollLeft > 1) more.push("start");
+      if (box.scrollLeft < max - 1) more.push("end");
+      wrap.dataset.more = more.join(" ");
+      const stuck = box.querySelector("tr > :first-child");
+      if (stuck && getComputedStyle(stuck).position === "sticky") wrap.style.setProperty("--fade-start", stuck.offsetWidth + 1 + "px");
+    };
+    box.addEventListener("scroll", update, { passive: true });
+    new ResizeObserver(update).observe(box);
+    update();
+  }
+})();
+</script>

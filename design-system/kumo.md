@@ -104,7 +104,9 @@ Kumo 的四档控件高度正好落在已有的尺寸 token 上，按下表使�
 - Kumo 的默认文案和无障碍名称都是英文，一律传中文：DatePicker 传 `locale={zhCN}`（`react-day-picker/locale`），Pagination 用 `text` 写“第 11–20 条，共 86 条”这类文案；Tabs、Pagination 传 `labels`（如 `pageNumber: "页码"`），Combobox 的 `TriggerInput` 传 `clearLabel` 和 `showOptionsLabel`。Breadcrumbs 的导航名称（breadcrumb）和 Toast 区域的名称（Notifications）写死在组件里，改不了，保持原样。
 - 表单字段用组件自带的 `label`（Input、Select、Combobox、TagInput、Slider 都有），占位符只写示例（“如 claude-sonnet-5-5”），不能只给 `aria-label` 或 `placeholder`。Pagination 的页码框是翻页控件的一部分，靠 `labels.pageNumber` 命名，`tools/page_check.py` 对它豁免。
 - Combobox、Select 这类外壳被 grid 或 flex 拉伸时，清除和箭头按钮会下移：放进 grid 时给容器 `align-content: start`。
-- Toast 的弹跳入场动画是 Kumo 自己的缓动曲线，不在“一条缓动、一个时长”的统一范围内；`prefers-reduced-motion` 下会关闭。
+- Toast 的弹跳入场动画是 Kumo 自己的缓动曲线，不在“一条缓动、一个时长”的统一范围内；`prefers-reduced-motion` 下会关闭。Tooltip、Popover 和菜单的缩放淡入保留 Kumo 的写法，时长已由适配层统一成 `dur`。
+- Tabs 的选中块（segmented 的底块、underline 的琥珀底线）会从旧位置滑到新位置，适配层已把它的时长和缓动统一成 `dur` / `ease`，这就是“动效”一节的滑动选中块；静态页面用 SlideTabs。
+- 只有图标的按钮用 Tooltip 显示名称，提示文字与按钮的 `aria-label` 相同；有可见文字的按钮不加提示。同一个工具栏里的提示包一层 `TooltipProvider`：第一个提示按 Kumo 默认等 600ms 出现，之后 400ms 内移到相邻按钮会立即出现（Base UI 的 `timeout`），这就是“动效”一节的提示分组。Tooltip 的底色由适配层改成 `pop`，与其他浮层一致。
 - 图标用 `lucide-react`：根节点包 `<LucideProvider className="i">`，传给 Kumo 时写 `icon={<Download />}`。按钮里的图标由适配层统一成 15px，`TsButton size="sm"` 里是 12px（靠 `data-ts-size`），描边 2。应用代码不直接引入 `@phosphor-icons/react` 或其他图标库，ESLint 会报错。
 - Kumo 组件内部的下拉箭头、勾选、关闭图标是 Phosphor 的内联 SVG，线宽和造型与 Lucide 略有差别，不改源码换不掉，保持原样。
 - 不要给 Kumo 组件传改颜色、字重、焦点的 className：适配层排在 utilities 之后，这些 className 不会生效。确实需要新样式时加一个 `data-ts-variant` 值，写进适配层。
@@ -122,10 +124,10 @@ Kumo 的四档控件高度正好落在已有的尺寸 token 上，按下表使�
 | 对比度 | 每段文字对实际叠加后的底色 | 0 处低于 4.5:1 |
 | axe-core | wcag2a、wcag2aa、wcag21aa、wcag22aa、best-practice | 0 违规 |
 | 横向溢出 | 320 / 360 / 760 / 1024 / 1440px | 0 处 |
-| 页面检查 | `tools/page_check.py`（2026-11-24 加入）：占位内容、按钮文案、可见标签、主操作、并排对齐、行长、贴边、空白、章节间距 | 0 FAIL、0 WARN |
+| 页面检查 | `tools/page_check.py`（2026-11-24 加入，2026-11-27 加上四项动效检查）：占位内容、按钮文案、可见标签、主操作、并排对齐、行长、贴边、空白、章节间距，减弱动效、默认可读、可以暂停、动效参数 | 0 FAIL、0 WARN |
 | 交互 | 键盘焦点、鼠标悬停、触屏轻点、选中态 | 2px `amber` outline 外偏移 3px；按钮上浮 2px、描边 `ice`；轻点不残留上浮；勾选、单选、开关、日期为琥珀实底 |
 
-覆盖的组件：Button、LinkButton、Input、Select、Combobox、Autocomplete、Checkbox、Radio、Switch、Slider、DatePicker、TagInput、Tabs、Breadcrumbs、Pagination、Sidebar、Banner、Badge、Meter、Table、Dialog、DropdownMenu、CommandPalette、Toasty。
+覆盖的组件：Button、LinkButton、Input、Select、Combobox、Autocomplete、Checkbox、Radio、Switch、Slider、DatePicker、TagInput、Tabs、Breadcrumbs、Pagination、Sidebar、Banner、Badge、Meter、Table、Dialog、DropdownMenu、CommandPalette、Toasty、Tooltip（v2.6.0 加入，含 TooltipProvider 分组）。
 
 ## 升级与维护
 

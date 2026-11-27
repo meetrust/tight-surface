@@ -2,10 +2,10 @@
 
 ## 用法
 - 结构：`<details class="trace">` > `<summary>`（状态点 `.trace-dot` + 标题 `.trace-title` + 用时 `.trace-time` + 摘要 `.trace-meta` + 折叠箭头 `.trace-caret`，用 `i-chevron-right`，展开时转 90°）+ `<ol class="trace-steps">`。
-- 状态：进行中写 `data-state="running"` 和 `open`，标题写“思考中”，状态点是带 `pulse` 的琥珀点；完成后去掉 `data-state` 和 `open`，标题改为“已思考”，状态点变 `faint`。
+- 状态：进行中写 `data-state="running"` 和 `open`，标题写“思考中”，状态点是带 `pulse` 的琥珀点（周期 `dur-loop`，受全页暂停控制）；完成后去掉 `data-state` 和 `open`，标题改为“已思考”，状态点变 `faint`。
 - 每一步：分类胶囊 `.tk`（步骤 `l0`、检索 `l1`、推理 `l2`、编码 `l6`，整个产品固定）+ 一句话 + 用时 `.t`。分类名固定两个字，胶囊列宽 64px。各步用时之和等于标题里的总用时。
 - 用时用 Display 字体和 tabular-nums，格式“12.4 s”；摘要写“4 步 · 1 次检索”。
-- 流式更新：用时文字每秒最多改一次；完成时在页面已有的 `role="status"` 区域里报一次“思考完成，用时 12.4 秒”，不要给 `summary` 加 `aria-live`。
+- 实时计时：进行中时，标题里的总用时和当前一步的用时一起走，每个 `tick`（100ms）刷新一次，步骤用时之和始终等于总用时；减弱动效、全页暂停或页面在后台时改为每秒一次。完成时定格，并在页面已有的 `role="status"` 区域里报一次“思考完成，用时 12.4 秒”；不要给 `summary` 加 `aria-live`。写法见预览里的脚本。
 - React 项目可以用 Kumo 的 Collapsible 做外壳，样式仍用本组件的类名。
 
 ## 不要

@@ -1,0 +1,49 @@
+<!-- @dsCard group="Motion" height=230 subtitle="数字滚动：只有变化的数位滚到新值，读屏读真实数值" -->
+<div style="padding:24px;max-width:680px;display:grid;gap:16px" data-roll-demo>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+    <div class="stat"><b><span class="roll">1,284,560</span></b><span>本月 Token 用量</span></div>
+    <div class="stat"><b><span class="roll">3,412</span></b><span>模型调用次数</span></div>
+    <div class="stat"><b><span class="roll">62%</span></b><span>缓存命中率</span></div>
+  </div>
+  <div><button class="act" type="button">刷新用量</button></div>
+</div>
+<script>
+(() => {
+  // 数字滚动：初始内容就是真实数值（没有脚本也可读）；脚本把它拆成数位列，之后只改 --d
+  const digitSlot = (d) => {
+    const s = document.createElement("span");
+    s.className = "roll-d";
+    s.style.setProperty("--d", d);
+    s.innerHTML = '<span class="roll-z">0</span><span class="roll-s">' + [..."0123456789"].map((x) => `<span>${x}</span>`).join("") + "</span>";
+    return s;
+  };
+  const setRoll = (el, text) => {
+    el.querySelector(".sr-only").textContent = text;
+    const row = el.querySelector("[aria-hidden]"), chars = [...text], kids = [...row.children];
+    while (kids.length > chars.length) row.removeChild(kids.shift());              // 位数变少：从左边去掉
+    while (kids.length < chars.length) { const n = document.createElement("span"); row.prepend(n); kids.unshift(n); }   // 位数变多：从左边补
+    chars.forEach((ch, i) => {                                                     // 原地更新，节点不拆下来，过渡才会播放
+      const n = kids[i], isDigit = /\d/.test(ch), wasDigit = n.classList.contains("roll-d");
+      if (isDigit && wasDigit) n.style.setProperty("--d", ch);
+      else if (isDigit) row.replaceChild(digitSlot(ch), n);
+      else if (wasDigit) { const c = document.createElement("span"); c.textContent = ch; row.replaceChild(c, n); }
+      else n.textContent = ch;
+    });
+  };
+  const initRoll = (el) => {
+    const text = el.textContent.trim();
+    el.innerHTML = '<span class="sr-only"></span><span aria-hidden="true"></span>';
+    setRoll(el, text);
+  };
+
+  const root = document.querySelector("[data-roll-demo]");
+  const rolls = [...root.querySelectorAll(".roll")];
+  rolls.forEach(initRoll);
+  const series = [["1,284,560", "3,412", "62%"], ["1,291,874", "3,436", "63%"], ["1,306,209", "3,481", "61%"], ["1,318,440", "3,507", "64%"]];
+  let k = 0;
+  root.querySelector("button").addEventListener("click", () => {
+    k = (k + 1) % series.length;
+    rolls.forEach((el, i) => setRoll(el, series[k][i]));
+  });
+})();
+</script>

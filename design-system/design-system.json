@@ -18,8 +18,8 @@
  },
  "lastChange": {
   "by": "韩同学",
-  "at": "2026-11-26T23:24:00Z",
+  "at": "2026-11-27T02:10:00Z",
   "via": "Claude chat",
-  "note": "v2.5.3 原则 2 补充例外：组件内部 12px 以下的细小间距可以不在刻度上，组件之间、卡片、图表和章节仍只取 sp-1–sp-9"
+  "note": "v2.6.0 新增原则 11“动效说明变化”和“动效”一节（motion.md）：8 个新动效 token、八条规则、九个标准模式；7 个 Motion 组件（Reflow、PauseMotion、NumberRoll、StatusRing、SlideTabs、StepFlow、ScrollFade）；ThinkingTrace 与 ToolCall 实时计时，TaskRow 与 ToolCall 改用 StatusRing；page_check 加四项动效检查；Kumo 提示分组与 Sidebar 时长；原则 9 加三维数据例外"
  }
 }

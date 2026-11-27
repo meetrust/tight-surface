@@ -1,4 +1,4 @@
-<!-- Tight Surface icon sprite (v2.4.1)
+<!-- Tight Surface icon sprite (v2.6.0)
      Icons: Lucide v1.71.0, https://lucide.dev, ISC License; arrow-up, arrow-up-right, check, chevron-right, code, download, x
      derive from Feather (MIT). Full notices: LICENSE-lucide.txt next to this file.
      Every symbol is copied unchanged from lucide-static 1.71.0 except the two edge-legend marks: i-move-right is move-right
@@ -9,6 +9,7 @@
      <svg class="i" aria-hidden="true"><use href="#i-name"/></svg>. Stroke comes from .i in components/bundle.css. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/></symbol>
   <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
   <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
   <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>

@@ -122,7 +122,15 @@
   --fs-hero: clamp(42px, 6.4vw, 72px);
   --ease: cubic-bezier(.2, .7, .2, 1);
   --dur: .28s;
+  --dur-drawer: .35s;
+  --dur-loop: 1.6s;
   --lift: translateY(-2px);
+  --enter-shift: 14px;
+  --enter-opacity: .25;
+  --grow-from: .12;
+  --stagger: 24ms;
+  --stagger-max: 240ms;
+  --tick: 100ms;
   --h-tag: 20px;
   --h-pill: 26px;
   --h-copy: 28px;

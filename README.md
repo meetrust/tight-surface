@@ -9,7 +9,7 @@
 单一琥珀强调、信息优先，<br>用于 AI 应用、开发工具与数据叙事页面。<br>
 *An info-first interface language with Night and Day themes and a single amber accent.*
 
-![版本 v2.5.3](https://img.shields.io/badge/version-v2.5.3-ffb347?style=flat-square&labelColor=111723)
+![版本 v2.6.0](https://img.shields.io/badge/version-v2.6.0-ffb347?style=flat-square&labelColor=111723)
 
 [原则 Principles](#设计原则--principles)&nbsp;· [概览 Overview](#概览--overview)&nbsp;· [目录 Contents](#目录--contents)&nbsp;· [使用 Usage](#使用--usage)&nbsp;· [版本 Versioning](#版本--versioning)
 
@@ -29,6 +29,7 @@
 | 8 | 中文排版优先<br><sub>Chinese typography first</sub> | 中英文之间加空格，全角标点，不留单字孤行<br><sub>Spaces between Chinese and Latin, full-width punctuation, no orphans</sub> |
 | 9 | 原生实现优先<br><sub>Native first</sub> | 图表用 HTML、CSS 和内联 SVG，不引入图表库<br><sub>Charts in HTML, CSS and inline SVG, no chart libraries</sub> |
 | 10 | README 原生可读<br><sub>Native README</sub> | 只用 GitHub 能渲染的写法，不放图片，中英对照<br><sub>GitHub-native markup, no images, bilingual</sub> |
+| 11 | 动效说明变化<br><sub>Motion explains change</sub> | 先退出、再移动、后进入，数字不从 0 数起，持续的动效可以暂停<br><sub>Exit, move, then enter; no count-ups; lasting motion can be paused</sub> |
 
 <sub>每条原则在 [design-system/README.md](design-system/README.md) 里展开为可检验的规则。<br>Each principle expands into checkable rules in the design system README.</sub>
 
@@ -38,7 +39,7 @@ Tight Surface 是一套跨产品的界面设计语言：同一套 token 和组�
 
 Tight Surface is a cross-product interface language. One set of tokens and components builds handbooks, maps, dashboards and agent apps that still read as one family. Night is the default theme; add `data-theme="day"` to `<html>` for the light Day theme, which changes colours only.
 
-| **10** | **2** | **45** | **21** | **24** |
+| **11** | **2** | **45** | **28** | **25** |
 |---|---|---|---|---|
 | 设计原则<br><sub>Principles</sub> | 主题<br><sub>Themes</sub> | 颜色 token<br><sub>Colour tokens</sub> | 组件<br><sub>Components</sub> | 已适配的 Kumo 组件<br><sub>Kumo components adapted</sub> |
 
@@ -49,12 +50,13 @@ Tight Surface is a cross-product interface language. One set of tokens and compo
 | [README.md](design-system/README.md) | 设计原则、文案、颜色、字体、间距、图标、组件选择<br><sub>Principles, copy, colour, type, spacing, icons, component choice</sub> |
 | [day-theme.md](design-system/day-theme.md) | 白昼主题的取值规则与对比度<br><sub>Day theme values and contrast</sub> |
 | [interaction.md](design-system/interaction.md) | 聚焦高亮、指针类型与固定按钮<br><sub>Focus highlight, pointer types and pin toggles</sub> |
+| [motion.md](design-system/motion.md) | 动效参数、八条规则、标准模式与不采用的动效<br><sub>Motion tokens, eight rules, patterns and what is left out</sub> |
 | [charts.md](design-system/charts.md) · [data-viz.md](design-system/data-viz.md) | 原生图表与数据可视化规则<br><sub>Native charts and data visualization rules</sub> |
 | [qa.md](design-system/qa.md) | 交付验收清单，共七组<br><sub>The delivery checklist in seven groups</sub> |
 | [github-readme.md](design-system/github-readme.md) | README 写法与检查脚本<br><sub>README rules and the checker script</sub> |
 | [kumo.md](design-system/kumo.md) | Kumo 应用控件的适配层<br><sub>The Kumo adapter for app controls</sub> |
 | [icons](design-system/icons) | Lucide 图标 sprite 与许可声明<br><sub>The Lucide icon sprite and its license</sub> |
-| [components](design-system/components) | 21 个组件的说明与预览<br><sub>Notes and previews for 21 components</sub> |
+| [components](design-system/components) | 28 个组件的说明与预览<br><sub>Notes and previews for 28 components</sub> |
 | [SKILL.md](skill/SKILL.md) | 同一套规则的 Claude 技能版本<br><sub>The same rules as a Claude skill</sub> |
 
 ## 使用 · Usage
@@ -77,13 +79,13 @@ After changing a component or a token, run the checks from the repository root a
 ```bash
 pip install playwright && python3 -m playwright install chromium
 npm install                               # axe-core
-python3 tools/check_components.py         # 22 previews, Night and Day, 1000 / 390 / 320 px
+python3 tools/check_components.py         # 29 previews, Night and Day, 1000 / 390 / 320 px
 python3 tools/readme_check.py README.md   # README rules
 ```
 
-交付用 Tight Surface 做的页面前，再跑一遍页面检查：占位内容、按钮文案、可见标签、主操作、并排对齐、行长、贴边、空白和章节间距，FAIL 为 0 才交付。
+交付用 Tight Surface 做的页面前，再跑一遍页面检查：占位内容、按钮文案、可见标签、主操作、并排对齐、行长、贴边、空白和章节间距，以及减弱动效、默认可读、可以暂停和动效参数四项动效检查，FAIL 为 0 才交付。
 
-Before delivering a page built with Tight Surface, run the page check for leftover placeholders, generic button labels, visible field labels, one primary action per group, row alignment, line length, edge gaps, blank bands and section spacing; deliver only with zero FAILs.
+Before delivering a page built with Tight Surface, run the page check for leftover placeholders, generic button labels, visible field labels, one primary action per group, row alignment, line length, edge gaps, blank bands and section spacing, plus four motion checks: reduced motion, readable by default, pausable and motion tokens; deliver only with zero FAILs.
 
 ```bash
 python3 tools/page_check.py path/to/index.html   # or a URL such as http://localhost:5173/
@@ -101,10 +103,10 @@ Versions follow semantic versioning: new or changed rules and components bump th
 design-system/        设计系统本体，与 artifact 的 project/ 一一对应 · The design system, mirroring the artifact
   README.md           设计原则与视觉基础 · Principles and foundations
   tokens.json / .css  两套主题的 token · Tokens for both themes
-  components/         bundle.css 与 21 个组件 · bundle.css and 21 components
+  components/         bundle.css 与 28 个组件 · bundle.css and 28 components
   kumo/               Kumo 适配层与对照页 · Kumo adapter and demo
   icons/              Lucide 图标 sprite 与许可 · Lucide sprite and license
-  *.md                白昼主题、交互、图表、验收、README 规则 · Day, interaction, charts, QA, README rules
+  *.md                白昼主题、交互、动效、图表、验收、README 规则 · Day, interaction, motion, charts, QA, README rules
 skill/SKILL.md        tight-surface-ui 技能 · The Claude skill
 tools/                组件、页面和 README 检查，文件清单 · Component, page and README checks, manifest
 docs/maintaining.md   版本与同步流程 · Release and sync steps

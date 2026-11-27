@@ -1,5 +1,5 @@
 /* ==========================================================================
-   kumo-tight-surface.css · Kumo × Tight Surface 适配层 v0.2
+   kumo-tight-surface.css · Kumo × Tight Surface 适配层 v0.3
    适用：@cloudflare/kumo 2.18.1（锁定精确版本；Tailwind v4 路径，不用 standalone CSS）
          Tight Surface 设计原则 v2 · tokens.css（含 warn、pop）原样引入、不加 layer
    原理：Kumo 组件只读语义 token（--color-kumo-* / --text-color-kumo-*）。
@@ -121,6 +121,9 @@
     transition-duration: var(--dur);
   }
   [class~="ease-out"], [class~="ease-in-out"] { transition-timing-function: var(--ease); }
+  /* Sidebar 的展开收起是抽屉：Kumo 把时长和缓动写在 Provider 的内联 style 里（250ms、cubic-bezier(.77, 0, .175, 1)），
+     在子元素上重新声明，统一成 dur-drawer / ease */
+  [data-sidebar-wrapper] > * { --sidebar-animation-duration: var(--dur-drawer); --sidebar-easing: var(--ease); }
   :is([data-kumo-component="Button"], [data-kumo-component="LinkButton"]) {
     transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease),
                 color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
@@ -214,6 +217,9 @@
   /* Toast：标题与说明回到字号阶梯（Kumo 写的是 15.6 / 14.8px），与 Banner 一致 */
   [role="region"][aria-live] [role="dialog"] h2 { font-size: var(--fs-sm); line-height: 1.4; }
   [role="region"][aria-live] [role="dialog"] p { font-size: var(--fs-xs); line-height: 1.5; }
+  /* Tooltip：Kumo 用 bg-kumo-base（= panel）；与其他浮层一样改用 pop，箭头同色。描边是 Kumo 的 1px outline（= rule-2） */
+  .kumo-tooltip-popup { background-color: var(--pop); }
+  .kumo-tooltip-popup [class~="fill-kumo-base"] { fill: var(--pop); }
 
   /* 8 · Kumo Table 放进 TS 的 .tbl 容器：表头、单元格回到 DataTable 规格，去掉斑马纹 */
   .tbl :where(table) { border-collapse: collapse; }

@@ -1,16 +1,11 @@
 <!-- @dsCard group="Agent" height=280 subtitle="工具调用胶囊：成功 · 失败 · 进行中 · 展开参数" -->
-<div style="padding:24px;max-width:680px">
-  <!-- @license lucide-static v1.71.0 - ISC -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
-    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
-  </svg>
+<div style="padding:24px;max-width:680px" data-tool-demo>
   <p class="tools-sum"><b>4</b> 次工具调用 · <b>2</b> 条消息</p>
   <ul class="tools">
-    <li><button class="tool" type="button" aria-expanded="true" aria-controls="tc-1" style="--c: var(--l1)"><svg class="i ok" aria-hidden="true"><use href="#i-check"/></svg><span class="sr-only">成功：</span><span class="nm">read_file</span><span class="arg">→ usage_2026-11.csv</span><span class="ms">0.4 s</span></button></li>
-    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-2" style="--c: var(--l6)"><svg class="i ok" aria-hidden="true"><use href="#i-check"/></svg><span class="sr-only">成功：</span><span class="nm">run_python</span><span class="arg">→ pivot.py</span><span class="ms">3.2 s</span></button></li>
-    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-3" style="--c: var(--l2)"><svg class="i no" aria-hidden="true"><use href="#i-x"/></svg><span class="sr-only">失败：</span><span class="nm">web_search</span><span class="arg">→ opus 5.5 定价</span><span class="ms">5.0 s</span></button></li>
-    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-4" data-state="running" style="--c: var(--l4)"><span class="sr-only">进行中：</span><span class="nm">write_file</span><span class="arg">→ report.md</span></button></li>
+    <li><button class="tool" type="button" aria-expanded="true" aria-controls="tc-1" style="--c: var(--l1)"><svg class="ring" viewBox="0 0 24 24" data-state="done" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg><span class="sr-only">成功：</span><span class="nm">read_file</span><span class="arg">→ usage_2026-11.csv</span><span class="ms">0.4 s</span></button></li>
+    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-2" style="--c: var(--l6)"><svg class="ring" viewBox="0 0 24 24" data-state="done" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg><span class="sr-only">成功：</span><span class="nm">run_python</span><span class="arg">→ pivot.py</span><span class="ms">3.2 s</span></button></li>
+    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-3" style="--c: var(--l2)"><svg class="ring" viewBox="0 0 24 24" data-state="failed" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg><span class="sr-only">失败：</span><span class="nm">web_search</span><span class="arg">→ opus 5.5 定价</span><span class="ms">5.0 s</span></button></li>
+    <li><button class="tool" type="button" aria-expanded="false" aria-controls="tc-4" data-state="running" style="--c: var(--l4)"><svg class="ring" viewBox="0 0 24 24" data-state="running" aria-hidden="true" focusable="false"><circle class="ring-track" cx="12" cy="12" r="10" pathLength="100"/><circle class="ring-arc" cx="12" cy="12" r="10" pathLength="100"/><path class="ring-mark ring-ok" d="m9 12 2 2 4-4" pathLength="1"/><path class="ring-mark ring-no" d="m15 9-6 6" pathLength="1"/><path class="ring-mark ring-no" d="m9 9 6 6" pathLength="1"/></svg><span class="sr-only">进行中：</span><span class="nm">write_file</span><span class="arg">→ report.md</span><span class="ms">1.2 s</span></button></li>
   </ul>
   <div class="tool-detail" id="tc-1">
     <div class="term"><div class="term-bar"><span class="lbl">read_file · 参数与结果</span></div><pre>{ "path": "usage_2026-11.csv" }
@@ -20,3 +15,22 @@
   <div class="tool-detail" id="tc-3" hidden></div>
   <div class="tool-detail" id="tc-4" hidden></div>
 </div>
+<script>
+(() => {
+  // 实时计时：运行中的工具每个 tick 刷新一次耗时；减弱动效、全页暂停或页面在后台时每秒一次
+  const css = getComputedStyle(document.documentElement);
+  const ms = (n) => { const v = css.getPropertyValue(n).trim(); return v.endsWith("ms") ? parseFloat(v) : parseFloat(v) * 1000; };
+  const TICK = ms("--tick");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const slow = () => reduce.matches || document.hidden || document.documentElement.dataset.motion === "paused";
+  const out = document.querySelector('[data-tool-demo] .tool[data-state="running"] .ms');
+  const start = performance.now() - parseFloat(out.textContent) * 1000;
+  let shown = -Infinity;
+  const loop = () => {
+    const now = performance.now();
+    if (!slow() || now - shown >= 1000) { shown = now; out.textContent = ((now - start) / 1000).toFixed(1) + " s"; }
+    setTimeout(loop, TICK);
+  };
+  loop();
+})();
+</script>

@@ -59,7 +59,7 @@ Night 仍是默认主题，写在 `:root` 上，已有页面不用做任何改�
 - 资源按钮 `.btn`：底色改为 `ink` 3%，悬停底色用 Day 的 `ice` 8%（原来写死了 Night 的白色 3% 和冰蓝 8%）。
 - 悬停：导航和目录的悬停底改为 `ink` 5%；热力格悬停略微压暗（brightness .96），不再提亮。
 - ModuleCard 顶条的发光减弱为数据色 45%；背景网格和点阵改用 Day 的 `ice` 着色，不透明度仍不超过 0.11。
-- 操作按钮 `.act` 和 4 个 Agent 组件只用 token 写成，Day 下不需要覆盖；`pulse` 脚冲光晕取当前主题的 `amber`。
+- 操作按钮 `.act` 和 4 个 Agent 组件只用 token 写成，Day 下不需要覆盖；`pulse` 脉冲光晕取当前主题的 `amber`。
 - 状态胶囊和 Banner 的 12% 淡底放在 `void` 或 `panel` 上：Day 的 `warn`（`l4`）放在 `panel-2` 上只有 4.49:1。
 
 写新组件时：颜色一律取 token，不写死 `#fff` 或深色 `rgba()`；需要透明度时写 `color-mix(in srgb, var(--token) N%, transparent)`，这样换主题时不用改组件。

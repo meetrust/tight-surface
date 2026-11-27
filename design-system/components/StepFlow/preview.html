@@ -1,0 +1,77 @@
+<!-- @dsCard group="Motion" height=470 subtitle="分步方向过渡：前进从右侧进入，后退从左侧进入" -->
+<div style="padding:24px;max-width:640px" data-step-flow>
+  <form class="approve" aria-label="预算调整确认">
+    <div class="approve-head"><p class="eyebrow">NEEDS APPROVAL</p><span class="approve-step">1 / 3</span></div>
+    <div class="step-view">
+      <div class="step-pane" tabindex="-1" aria-labelledby="sf-q1">
+        <p class="approve-q" id="sf-q1">下月预算会超出 12%，要切换到哪种路由策略？</p>
+        <fieldset class="approve-opts"><legend class="sr-only">路由策略</legend>
+          <label class="opt"><input type="radio" name="sf-route" value="长上下文请求改走 Sonnet" checked><span><b>长上下文请求改走 Sonnet</b><small>预计节省 9%，对回答质量影响最小</small></span><span class="opt-conf">置信度 82%</span></label>
+          <label class="opt"><input type="radio" name="sf-route" value="所有请求设置每日上限"><span><b>所有请求设置每日上限</b><small>预算可控，但高峰期会排队</small></span><span class="opt-conf">置信度 64%</span></label>
+        </fieldset>
+      </div>
+      <div class="step-pane" tabindex="-1" aria-labelledby="sf-q2" hidden>
+        <p class="approve-q" id="sf-q2">剩下的超支部分从哪里扣？</p>
+        <fieldset class="approve-opts"><legend class="sr-only">扣减来源</legend>
+          <label class="opt"><input type="radio" name="sf-source" value="计入下月预算" checked><span><b>计入下月预算</b><small>本月照常运行，下月额度相应减少</small></span><span class="opt-conf">置信度 71%</span></label>
+          <label class="opt"><input type="radio" name="sf-source" value="申请追加额度"><span><b>申请追加额度</b><small>需要财务审批，约 2 个工作日</small></span><span class="opt-conf">置信度 58%</span></label>
+        </fieldset>
+      </div>
+      <div class="step-pane" tabindex="-1" aria-labelledby="sf-q3" hidden>
+        <p class="approve-q" id="sf-q3">新策略什么时候生效？</p>
+        <fieldset class="approve-opts"><legend class="sr-only">生效时间</legend>
+          <label class="opt"><input type="radio" name="sf-when" value="下一个计费周期" checked><span><b>下一个计费周期</b><small>12 月 1 日起，不影响本月账单</small></span><span class="opt-conf">置信度 77%</span></label>
+          <label class="opt"><input type="radio" name="sf-when" value="立即生效"><span><b>立即生效</b><small>正在运行的任务会在下一次调用时切换</small></span><span class="opt-conf">置信度 52%</span></label>
+        </fieldset>
+      </div>
+      <div class="step-pane" tabindex="-1" aria-labelledby="sf-done" hidden>
+        <p class="approve-q" id="sf-done">已记录 3 项决定</p>
+        <ol style="margin:0;padding-left:20px;font-size:14px;line-height:1.8;color:var(--ink-2)"></ol>
+      </div>
+    </div>
+    <div class="approve-foot">
+      <button class="act ghost" type="button" data-prev disabled>上一步</button>
+      <button class="act primary" type="submit">采用所选方案</button>
+      <button class="act" type="button" data-restart hidden>重新开始</button>
+    </div>
+  </form>
+</div>
+<script>
+(() => {
+  // 分步方向过渡：原位替换只播放进入；前进时新内容从右侧进入，后退时从左侧进入，然后把焦点移到新的一步
+  const root = document.querySelector("[data-step-flow]");
+  const form = root.querySelector("form"), panes = [...root.querySelectorAll(".step-pane")];
+  const stepLabel = root.querySelector(".approve-step"), prev = root.querySelector("[data-prev]");
+  const submit = root.querySelector('[type="submit"]'), restart = root.querySelector("[data-restart]");
+  const css = getComputedStyle(document.documentElement);
+  const ms = (n) => { const v = css.getPropertyValue(n).trim(); return v.endsWith("ms") ? parseFloat(v) : parseFloat(v) * 1000; };
+  const DUR = ms("--dur"), EASE = css.getPropertyValue("--ease").trim();
+  const SHIFT = parseFloat(css.getPropertyValue("--enter-shift")), FROM = parseFloat(css.getPropertyValue("--enter-opacity"));
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const last = panes.length - 1;
+  let at = 0;
+
+  const go = (to) => {
+    const dir = Math.sign(to - at);
+    panes[at].hidden = true;
+    at = to;
+    const pane = panes[at];
+    pane.hidden = false;
+    pane.getAnimations().forEach((a) => a.cancel());
+    if (!reduce.matches && dir) {
+      pane.animate([{ opacity: FROM, transform: `translateX(${dir * SHIFT}px)` }, { opacity: 1, transform: "none" }], { duration: DUR, easing: EASE });
+    }
+    stepLabel.textContent = `${Math.min(at + 1, last)} / ${last}`;
+    prev.disabled = at === 0 || at === last;
+    prev.hidden = submit.hidden = at === last;
+    restart.hidden = at !== last;
+    if (at === last) {
+      pane.querySelector("ol").replaceChildren(...[...form.querySelectorAll("input:checked")].map((r) => Object.assign(document.createElement("li"), { textContent: r.value })));
+    }
+    pane.focus({ preventScroll: true });
+  };
+  form.addEventListener("submit", (e) => { e.preventDefault(); if (at < last) go(at + 1); });
+  prev.addEventListener("click", () => { if (at > 0) go(at - 1); });
+  restart.addEventListener("click", () => { form.reset(); go(0); });
+})();
+</script>
